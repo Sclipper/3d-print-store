@@ -1,12 +1,16 @@
 import Airtable from 'airtable';
 import { Product, Category, Order, ProductImage, ShippingAddress } from './types';
+import { mockProducts, mockCategories } from './mock-data';
 
-// Initialize Airtable
-const airtable = new Airtable({
-  apiKey: process.env.AIRTABLE_API_KEY,
-});
+// Check if Airtable is configured
+const isAirtableConfigured = !!(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
 
-const base = airtable.base(process.env.AIRTABLE_BASE_ID || '');
+// Initialize Airtable (only if configured)
+const airtable = isAirtableConfigured 
+  ? new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
+  : null;
+
+const base = airtable?.base(process.env.AIRTABLE_BASE_ID || '');
 
 // Table names
 const PRODUCTS_TABLE = 'Products';
@@ -85,6 +89,28 @@ export async function getProducts(options?: {
   featured?: boolean;
   limit?: number;
 }): Promise<Product[]> {
+  // Use mock data if Airtable is not configured
+  if (!isAirtableConfigured || !base) {
+    let products = [...mockProducts];
+    
+    if (options?.featured) {
+      products = products.filter(p => p.featured);
+    }
+    
+    if (options?.categorySlug) {
+      products = products.filter(p => {
+        const category = mockCategories.find(c => c.id === p.categoryId);
+        return category?.slug === options.categorySlug;
+      });
+    }
+    
+    if (options?.limit) {
+      products = products.slice(0, options.limit);
+    }
+    
+    return products;
+  }
+
   const filterFormulas: string[] = [];
   
   if (options?.featured) {
@@ -112,6 +138,11 @@ export async function getProducts(options?: {
 
 // Get a single product by slug
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+  // Use mock data if Airtable is not configured
+  if (!isAirtableConfigured || !base) {
+    return mockProducts.find(p => p.slug === slug) || null;
+  }
+
   const records = await base(PRODUCTS_TABLE)
     .select({
       filterByFormula: `{Slug} = '${slug}'`,
@@ -124,6 +155,11 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 // Get a single product by ID
 export async function getProductById(id: string): Promise<Product | null> {
+  // Use mock data if Airtable is not configured
+  if (!isAirtableConfigured || !base) {
+    return mockProducts.find(p => p.id === id) || null;
+  }
+
   try {
     const record = await base(PRODUCTS_TABLE).find(id);
     return transformProduct(record);
@@ -134,6 +170,11 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 // Get all categories
 export async function getCategories(): Promise<Category[]> {
+  // Use mock data if Airtable is not configured
+  if (!isAirtableConfigured || !base) {
+    return mockCategories;
+  }
+
   const records = await base(CATEGORIES_TABLE)
     .select({
       sort: [{ field: 'Order', direction: 'asc' }],
@@ -145,6 +186,11 @@ export async function getCategories(): Promise<Category[]> {
 
 // Get a single category by slug
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  // Use mock data if Airtable is not configured
+  if (!isAirtableConfigured || !base) {
+    return mockCategories.find(c => c.slug === slug) || null;
+  }
+
   const records = await base(CATEGORIES_TABLE)
     .select({
       filterByFormula: `{Slug} = '${slug}'`,
@@ -165,6 +211,23 @@ export async function createOrder(orderData: {
   totalAmount: number;
   shippingAddress: ShippingAddress;
 }): Promise<Order> {
+  // If Airtable is not configured, return a mock order
+  if (!isAirtableConfigured || !base) {
+    console.log('Mock order created:', orderData);
+    return {
+      id: `mock-${Date.now()}`,
+      orderId: orderData.orderId,
+      customerEmail: orderData.customerEmail,
+      customerName: orderData.customerName,
+      productId: orderData.productId,
+      quantity: orderData.quantity,
+      totalAmount: orderData.totalAmount,
+      status: 'paid',
+      shippingAddress: orderData.shippingAddress,
+      createdAt: new Date().toISOString(),
+    };
+  }
+
   const record = await base(ORDERS_TABLE).create({
     'Order ID': orderData.orderId,
     'Customer Email': orderData.customerEmail,
@@ -195,6 +258,11 @@ export async function updateOrderStatus(
   recordId: string,
   status: Order['status']
 ): Promise<void> {
+  if (!isAirtableConfigured || !base) {
+    console.log('Mock order status update:', recordId, status);
+    return;
+  }
+
   await base(ORDERS_TABLE).update(recordId, {
     'Status': status,
   });
