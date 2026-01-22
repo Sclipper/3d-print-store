@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 3D Print Store
+
+A modern e-commerce store built with Next.js, Airtable, and Stripe.
+
+## Features
+
+- Product catalog with categories
+- Product detail pages with image galleries
+- Stripe checkout integration
+- Order tracking via Airtable
+- Responsive, minimalist design
+
+## Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Airtable
+- **Payments**: Stripe
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ 
+- Yarn
+- Airtable account
+- Stripe account
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone git@github.com:Sclipper/3d-print-store.git
+cd 3d-print-store
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Copy the environment file and fill in your values:
 
-## Learn More
+```bash
+cp .env.example .env.local
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+yarn dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) to view the store.
 
-## Deploy on Vercel
+## Airtable Setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a new Airtable base with the following tables:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Products Table
+
+| Field Name | Type |
+|------------|------|
+| Name | Single line text |
+| Slug | Single line text |
+| Description | Long text |
+| Short Description | Long text |
+| Price | Currency |
+| Compare At Price | Currency |
+| Images | Attachment |
+| Category | Link to Categories |
+| In Stock | Checkbox |
+| Stock Quantity | Number |
+| Specifications | Long text |
+| Featured | Checkbox |
+| Created | Created time |
+
+### Categories Table
+
+| Field Name | Type |
+|------------|------|
+| Name | Single line text |
+| Slug | Single line text |
+| Description | Long text |
+| Image | Attachment |
+| Order | Number |
+
+### Orders Table
+
+| Field Name | Type |
+|------------|------|
+| Order ID | Single line text |
+| Customer Email | Email |
+| Customer Name | Single line text |
+| Product | Link to Products |
+| Quantity | Number |
+| Total Amount | Currency |
+| Status | Single select (pending, paid, shipped, delivered) |
+| Shipping Address | Long text |
+| Created | Created time |
+
+## Stripe Setup
+
+1. Create a Stripe account at [stripe.com](https://stripe.com)
+2. Get your API keys from the Dashboard
+3. Create a webhook endpoint pointing to `/api/webhook/stripe`
+4. Subscribe to the `checkout.session.completed` event
+
+### Local Development with Stripe
+
+Use the Stripe CLI to forward webhooks locally:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhook/stripe
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `AIRTABLE_API_KEY` | Your Airtable API key |
+| `AIRTABLE_BASE_ID` | Your Airtable base ID |
+| `STRIPE_SECRET_KEY` | Stripe secret key (sk_test_...) |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (pk_test_...) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `NEXT_PUBLIC_BASE_URL` | Your site URL |
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── api/               # API routes
+│   ├── categories/        # Category pages
+│   ├── checkout/          # Checkout success page
+│   └── products/          # Product pages
+├── components/            # React components
+│   ├── layout/           # Header, Footer, Newsletter
+│   └── product/          # Product-related components
+└── lib/                   # Utilities
+    ├── airtable.ts       # Airtable client
+    ├── stripe.ts         # Stripe client
+    └── types.ts          # TypeScript types
+```
+
+## License
+
+MIT

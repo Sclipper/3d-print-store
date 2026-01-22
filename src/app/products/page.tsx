@@ -1,0 +1,55 @@
+import { getProducts } from '@/lib/airtable';
+import ProductGrid from '@/components/product/ProductGrid';
+import Newsletter from '@/components/layout/Newsletter';
+import { Product } from '@/lib/types';
+
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export const metadata = {
+  title: 'All Products | 3D Print Store',
+  description: 'Browse our full collection of premium 3D printed designs.',
+};
+
+export default async function ProductsPage() {
+  let products: Product[] = [];
+
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+  }
+
+  return (
+    <>
+      {/* Breadcrumb */}
+      <div className="border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <nav className="text-sm text-gray-500">
+            <a href="/" className="hover:text-black transition-colors">
+              Home
+            </a>
+            <span className="mx-2">/</span>
+            <span className="text-black">Products</span>
+          </nav>
+        </div>
+      </div>
+
+      {/* Products Section */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-light">All Products</h1>
+            <span className="text-sm text-gray-500">
+              {products.length} {products.length === 1 ? 'product' : 'products'}
+            </span>
+          </div>
+
+          <ProductGrid products={products} columns={3} />
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <Newsletter />
+    </>
+  );
+}
