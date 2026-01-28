@@ -1,4 +1,4 @@
-# 3D Print Store
+# Bemu Store
 
 A modern e-commerce store built with Next.js, Airtable, and Stripe.
 
@@ -31,8 +31,8 @@ A modern e-commerce store built with Next.js, Airtable, and Stripe.
 1. Clone the repository:
 
 ```bash
-git clone git@github.com:Sclipper/3d-print-store.git
-cd 3d-print-store
+git clone git@github.com:Sclipper/bemu-store.git
+cd bemu-store
 ```
 
 2. Install dependencies:

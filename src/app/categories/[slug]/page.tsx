@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
   if (!category) {
     return {
-      title: 'Категорията не е намерена | 3D Принт Магазин',
+      title: 'Категорията не е намерена | Bemu',
     };
   }
 
   return {
-    title: `${category.name} | 3D Принт Магазин`,
+    title: `${category.name} | Bemu`,
     description: category.description || `Browse our ${category.name} collection.`,
   };
 }

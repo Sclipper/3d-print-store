@@ -54,9 +54,9 @@ export default function Header({ categories = [] }: HeaderProps) {
             <Image
               src="/logo.jpg"
               alt="Bemu"
-              width={192}
-              height={64}
-              className="h-16 w-auto"
+              width={240}
+              height={80}
+              className="h-20 w-auto"
               priority
             />
           </Link>

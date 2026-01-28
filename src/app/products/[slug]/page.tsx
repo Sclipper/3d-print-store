@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
   if (!product) {
     return {
-      title: 'Продуктът не е намерен | 3D Принт Магазин',
+      title: 'Продуктът не е намерен | Bemu',
     };
   }
 
   return {
-    title: `${product.name} | 3D Принт Магазин`,
+    title: `${product.name} | Bemu`,
     description: product.shortDescription || product.description,
     openGraph: {
       images: product.images[0]?.url ? [product.images[0].url] : [],

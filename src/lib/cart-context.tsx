@@ -17,7 +17,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const CART_STORAGE_KEY = '3d-print-store-cart';
+const CART_STORAGE_KEY = 'bemu-store-cart';
 
 // Generate a unique key for cart items based on product ID and variants
 export function getCartItemKey(item: { productId: string; selectedColor?: string; selectedSize?: string }): string {

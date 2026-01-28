@@ -126,9 +126,9 @@ export default function Footer() {
               <Image
                 src="/logo.jpg"
                 alt="Bemu"
-                width={100}
-                height={32}
-                className="h-8 w-auto"
+                width={128}
+                height={40}
+                className="h-10 w-auto"
               />
             </Link>
             <p className="text-xs text-gray-500 mt-4 md:mt-0">

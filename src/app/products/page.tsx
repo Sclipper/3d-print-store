@@ -6,8 +6,8 @@ import { Product } from '@/lib/types';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata = {
-  title: 'Всички продукти | 3D Принт Магазин',
-  description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни.',
+  title: 'Всички продукти | Bemu',
+  description: 'Разгледайте пълната ни колекция от премиум дизайни.',
 };
 
 export default async function ProductsPage() {

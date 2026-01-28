@@ -25,10 +25,10 @@ export default async function HomePage() {
       <section className="bg-gray-50 py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl lg:text-6xl font-light tracking-tight mb-6">
-            Премиум 3D Принтове
+            Премиум Дизайни
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Открийте нашата колекция от красиво изработени 3D принтирани дизайни.
+            Открийте нашата колекция от красиво изработени дизайни.
             Всяко изделие е създадено с прецизност и грижа.
           </p>
           <Link
@@ -94,7 +94,7 @@ export default async function HomePage() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl font-light mb-6">Изработено с прецизност</h2>
             <p className="text-gray-600 leading-relaxed">
-              Всеки от нашите продукти е внимателно проектиран и 3D принтиран
+              Всеки от нашите продукти е внимателно проектиран и изработен
               с използване на премиум материали. Съчетаваме най-новите технологии
               с артистична визия, за да създадем уникални изделия, които се
               отличават във всяко пространство.
