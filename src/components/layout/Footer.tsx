@@ -8,7 +8,7 @@ export default function Footer() {
           {/* Discover */}
           <div>
             <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-              Discover
+              Открийте
             </h3>
             <ul className="space-y-3">
               <li>
@@ -16,7 +16,7 @@ export default function Footer() {
                   href="/about"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  About Us
+                  За нас
                 </Link>
               </li>
               <li>
@@ -24,7 +24,7 @@ export default function Footer() {
                   href="/products"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  Products
+                  Продукти
                 </Link>
               </li>
             </ul>
@@ -33,7 +33,7 @@ export default function Footer() {
           {/* Support */}
           <div>
             <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-              Support
+              Поддръжка
             </h3>
             <ul className="space-y-3">
               <li>
@@ -41,7 +41,7 @@ export default function Footer() {
                   href="/contact"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  Contact
+                  Контакт
                 </Link>
               </li>
               <li>
@@ -49,7 +49,7 @@ export default function Footer() {
                   href="/faq"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  FAQ
+                  Често задавани въпроси
                 </Link>
               </li>
               <li>
@@ -57,7 +57,7 @@ export default function Footer() {
                   href="/shipping"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  Delivery and Returns
+                  Доставка и връщане
                 </Link>
               </li>
             </ul>
@@ -66,7 +66,7 @@ export default function Footer() {
           {/* Legal */}
           <div>
             <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-              Legal
+              Правна информация
             </h3>
             <ul className="space-y-3">
               <li>
@@ -74,7 +74,7 @@ export default function Footer() {
                   href="/terms"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  Terms of Service
+                  Общи условия
                 </Link>
               </li>
               <li>
@@ -82,7 +82,7 @@ export default function Footer() {
                   href="/privacy"
                   className="text-sm text-gray-600 hover:text-black transition-colors"
                 >
-                  Privacy Policy
+                  Политика за поверителност
                 </Link>
               </li>
             </ul>
@@ -91,7 +91,7 @@ export default function Footer() {
           {/* Social */}
           <div>
             <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-              Social
+              Социални мрежи
             </h3>
             <ul className="space-y-3">
               <li>
@@ -122,10 +122,10 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-100">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <Link href="/" className="font-bold text-lg tracking-tight">
-              3D PRINT
+              3D ПРИНТ
             </Link>
             <p className="text-xs text-gray-500 mt-4 md:mt-0">
-              © {new Date().getFullYear()} 3D Print Store. All rights reserved.
+              © {new Date().getFullYear()} 3D Принт Магазин. Всички права запазени.
             </p>
           </div>
         </div>

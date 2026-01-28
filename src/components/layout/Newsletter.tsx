@@ -25,9 +25,9 @@ export default function Newsletter() {
     <section className="bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-2xl font-light mb-2">Subscribe to the newsletter</h2>
+          <h2 className="text-2xl font-light mb-2">Абонирайте се за бюлетина</h2>
           <p className="text-sm text-gray-600 mb-6">
-            Be the first to know about new collections and exclusive offers.
+            Бъдете първите, които научават за нови колекции и ексклузивни оферти.
           </p>
 
           <form onSubmit={handleSubmit} className="flex gap-0">
@@ -36,12 +36,12 @@ export default function Newsletter() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder="Имейл"
                 required
                 disabled={status === 'loading'}
                 className="w-full px-4 py-3 border border-gray-200 border-r-0 focus:outline-none focus:border-black transition-colors disabled:bg-gray-100"
               />
-              <label className="sr-only">Email</label>
+              <label className="sr-only">Имейл</label>
             </div>
             <button
               type="submit"
@@ -88,13 +88,13 @@ export default function Newsletter() {
 
           {status === 'success' && (
             <p className="mt-4 text-sm text-green-600">
-              Thank you for subscribing!
+              Благодарим ви за абонамента!
             </p>
           )}
 
           {status === 'error' && (
             <p className="mt-4 text-sm text-red-600">
-              Something went wrong. Please try again.
+              Нещо се обърка. Моля, опитайте отново.
             </p>
           )}
         </div>

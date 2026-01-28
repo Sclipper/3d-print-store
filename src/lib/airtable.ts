@@ -233,6 +233,7 @@ export async function createOrder(orderData: {
     'Order ID': orderData.orderId,
     'Customer Email': orderData.customerEmail,
     'Customer Name': orderData.customerName,
+    'Customer Phone': orderData.shippingAddress.phone || '',
     'Product': [orderData.productId],
     'Quantity': orderData.quantity,
     'Total Amount': orderData.totalAmount,

@@ -72,7 +72,7 @@ export default function BuyButton({
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
+      alert('Неуспешно стартиране на плащане. Моля, опитайте отново.');
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +84,7 @@ export default function BuyButton({
         disabled
         className="w-full py-4 bg-gray-200 text-gray-500 text-sm font-medium cursor-not-allowed"
       >
-        Sold out
+        Изчерпано
       </button>
     );
   }
@@ -95,7 +95,7 @@ export default function BuyButton({
         onClick={handleAddToCart}
         className="w-full py-4 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
       >
-        Add to cart - ${(product.price * quantity).toFixed(2)}
+        Добави в количката - ${(product.price * quantity).toFixed(2)}
       </button>
       <button
         onClick={handleBuyNow}
@@ -123,10 +123,10 @@ export default function BuyButton({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            Processing...
+            Обработка...
           </span>
         ) : (
-          'Buy now'
+          'Купи сега'
         )}
       </button>
     </div>

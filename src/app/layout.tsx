@@ -12,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "3D Print Store",
-  description: "Premium 3D printed designs for your home",
+  title: "3D Принт Магазин",
+  description: "Премиум 3D принтирани дизайни за вашия дом",
 };
 
 export default async function RootLayout({
@@ -30,7 +30,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en">
+    <html lang="bg">
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
           <div className="min-h-screen flex flex-col">

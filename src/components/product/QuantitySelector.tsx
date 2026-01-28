@@ -34,14 +34,14 @@ export default function QuantitySelector({
 
   return (
     <div className="flex items-center">
-      <label className="sr-only">Quantity</label>
+      <label className="sr-only">Количество</label>
       <div className="flex border border-gray-200">
         <button
           type="button"
           onClick={decrease}
           disabled={disabled || quantity <= 1}
           className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-black hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Decrease quantity"
+          aria-label="Намали количеството"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 12H4" />
@@ -61,7 +61,7 @@ export default function QuantitySelector({
           onClick={increase}
           disabled={disabled || quantity >= max}
           className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-black hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Increase quantity"
+          aria-label="Увеличи количеството"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />

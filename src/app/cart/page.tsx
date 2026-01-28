@@ -37,7 +37,7 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
+      alert('Неуспешно стартиране на плащане. Моля, опитайте отново.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -50,10 +50,10 @@ export default function CartPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="text-sm text-gray-500">
             <Link href="/" className="hover:text-black transition-colors">
-              Home
+              Начало
             </Link>
             <span className="mx-2">/</span>
-            <span className="text-black">Cart</span>
+            <span className="text-black">Количка</span>
           </nav>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function CartPage() {
       {/* Cart Content */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-light mb-8">Your Cart</h1>
+          <h1 className="text-3xl font-light mb-8">Вашата количка</h1>
 
           {cart.items.length === 0 ? (
             <div className="text-center py-16">
@@ -78,15 +78,15 @@ export default function CartPage() {
                   d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                 />
               </svg>
-              <h2 className="text-xl font-light text-gray-600 mb-4">Your cart is empty</h2>
+              <h2 className="text-xl font-light text-gray-600 mb-4">Количката ви е празна</h2>
               <p className="text-gray-500 mb-8">
-                Looks like you haven&apos;t added any items to your cart yet.
+                Изглежда, че все още не сте добавили продукти в количката си.
               </p>
               <Link
                 href="/products"
                 className="inline-block px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
               >
-                Continue Shopping
+                Продължете пазаруването
               </Link>
             </div>
           ) : (
@@ -94,10 +94,10 @@ export default function CartPage() {
               {/* Cart Items */}
               <div className="lg:col-span-8">
                 <div className="border-b border-gray-200 pb-4 mb-4 hidden sm:grid sm:grid-cols-12 text-sm text-gray-500">
-                  <div className="sm:col-span-6">Product</div>
-                  <div className="sm:col-span-2 text-center">Price</div>
-                  <div className="sm:col-span-2 text-center">Quantity</div>
-                  <div className="sm:col-span-2 text-right">Total</div>
+                  <div className="sm:col-span-6">Продукт</div>
+                  <div className="sm:col-span-2 text-center">Цена</div>
+                  <div className="sm:col-span-2 text-center">Количество</div>
+                  <div className="sm:col-span-2 text-right">Общо</div>
                 </div>
 
                 <ul className="divide-y divide-gray-200">
@@ -154,26 +154,26 @@ export default function CartPage() {
                                 onClick={() => removeItem(itemKey)}
                                 className="text-sm text-gray-500 hover:text-black mt-2 text-left"
                               >
-                                Remove
+                                Премахни
                               </button>
                             </div>
                           </div>
 
                           {/* Price */}
                           <div className="sm:col-span-2 flex items-center justify-between sm:justify-center">
-                            <span className="sm:hidden text-sm text-gray-500">Price:</span>
+                            <span className="sm:hidden text-sm text-gray-500">Цена:</span>
                             <span>${item.price.toFixed(2)}</span>
                           </div>
 
                           {/* Quantity */}
                           <div className="sm:col-span-2 flex items-center justify-between sm:justify-center">
-                            <span className="sm:hidden text-sm text-gray-500">Quantity:</span>
+                            <span className="sm:hidden text-sm text-gray-500">Количество:</span>
                             <div className="flex items-center border border-gray-200">
                               <button
                                 onClick={() => updateQuantity(itemKey, item.quantity - 1)}
                                 disabled={item.quantity <= 1}
                                 className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                                aria-label="Decrease quantity"
+                                aria-label="Намали количеството"
                               >
                                 <svg
                                   className="w-3 h-3"
@@ -194,7 +194,7 @@ export default function CartPage() {
                                 onClick={() => updateQuantity(itemKey, item.quantity + 1)}
                                 disabled={item.quantity >= item.stockQuantity}
                                 className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                                aria-label="Increase quantity"
+                                aria-label="Увеличи количеството"
                               >
                                 <svg
                                   className="w-3 h-3"
@@ -215,7 +215,7 @@ export default function CartPage() {
 
                           {/* Total */}
                           <div className="sm:col-span-2 flex items-center justify-between sm:justify-end">
-                            <span className="sm:hidden text-sm text-gray-500">Total:</span>
+                            <span className="sm:hidden text-sm text-gray-500">Общо:</span>
                             <span className="font-medium">
                               ${(item.price * item.quantity).toFixed(2)}
                             </span>
@@ -230,20 +230,20 @@ export default function CartPage() {
               {/* Order Summary */}
               <div className="lg:col-span-4 mt-8 lg:mt-0">
                 <div className="bg-gray-50 p-6">
-                  <h2 className="text-lg font-medium mb-4">Order Summary</h2>
+                  <h2 className="text-lg font-medium mb-4">Обобщение на поръчката</h2>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal</span>
+                      <span className="text-gray-600">Междинна сума</span>
                       <span>${cart.totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Shipping</span>
-                      <span className="text-gray-500">Calculated at checkout</span>
+                      <span className="text-gray-600">Доставка</span>
+                      <span className="text-gray-500">Изчислява се при плащане</span>
                     </div>
                   </div>
                   <div className="border-t border-gray-200 mt-4 pt-4">
                     <div className="flex justify-between text-base font-medium">
-                      <span>Total</span>
+                      <span>Общо</span>
                       <span>${cart.totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
@@ -269,17 +269,17 @@ export default function CartPage() {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           />
                         </svg>
-                        Processing...
+                        Обработка...
                       </span>
                     ) : (
-                      'Proceed to Checkout'
+                      'Продължи към плащане'
                     )}
                   </button>
                   <Link
                     href="/products"
                     className="block text-center mt-4 text-sm text-gray-600 hover:text-black"
                   >
-                    Continue Shopping
+                    Продължете пазаруването
                   </Link>
                 </div>
               </div>

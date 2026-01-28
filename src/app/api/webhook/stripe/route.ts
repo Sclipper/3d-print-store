@@ -35,16 +35,25 @@ export async function POST(request: NextRequest) {
       // Get full session details
       const fullSession = await getCheckoutSession(session.id);
 
-      // Extract order details
-      const productId = session.metadata?.productId;
-      const quantity = parseInt(session.metadata?.quantity || '1', 10);
+      // Extract order details from metadata
+      const itemCount = parseInt(session.metadata?.itemCount || '0', 10);
 
-      if (!productId) {
-        console.error('Missing product ID in session metadata');
+      if (itemCount === 0) {
+        console.error('No items found in session metadata');
         return NextResponse.json(
-          { error: 'Missing product ID' },
+          { error: 'No items in order' },
           { status: 400 }
         );
+      }
+
+      // Parse all items from metadata
+      const items: { productId: string; quantity: number }[] = [];
+      for (let i = 0; i < itemCount; i++) {
+        const productId = session.metadata?.[`product_${i}_id`];
+        const quantity = parseInt(session.metadata?.[`product_${i}_quantity`] || '1', 10);
+        if (productId) {
+          items.push({ productId, quantity });
+        }
       }
 
       // Build shipping address - cast session to access shipping details
@@ -53,8 +62,13 @@ export async function POST(request: NextRequest) {
       const shippingInfo = sessionData.collected_information?.shipping_details || 
                           sessionData.shipping_details || 
                           sessionData.shipping;
+      
+      // Get phone number from customer details
+      const phoneNumber = session.customer_details?.phone || '';
+      
       const shippingAddress: ShippingAddress = {
         name: shippingInfo?.name || session.customer_details?.name || '',
+        phone: phoneNumber,
         line1: shippingInfo?.address?.line1 || '',
         line2: shippingInfo?.address?.line2 || undefined,
         city: shippingInfo?.address?.city || '',
@@ -63,19 +77,21 @@ export async function POST(request: NextRequest) {
         country: shippingInfo?.address?.country || '',
       };
 
-      // Create order in Airtable
+      // Create order in Airtable for each item
       try {
-        await createOrder({
-          orderId: session.id,
-          customerEmail: session.customer_details?.email || '',
-          customerName: session.customer_details?.name || '',
-          productId,
-          quantity,
-          totalAmount: (session.amount_total || 0) / 100, // Convert from cents
-          shippingAddress,
-        });
+        for (const item of items) {
+          await createOrder({
+            orderId: session.id,
+            customerEmail: session.customer_details?.email || '',
+            customerName: session.customer_details?.name || '',
+            productId: item.productId,
+            quantity: item.quantity,
+            totalAmount: (session.amount_total || 0) / 100, // Convert from cents
+            shippingAddress,
+          });
+        }
 
-        console.log('Order created successfully:', session.id);
+        console.log('Orders created successfully:', session.id, `(${items.length} items)`);
       } catch (err) {
         console.error('Failed to create order in Airtable:', err);
         // Don't fail the webhook - Stripe will retry

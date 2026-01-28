@@ -21,31 +21,31 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
   const accordionItems = [
     {
-      title: 'Description',
-      content: product.description || 'No description available.',
+      title: 'Описание',
+      content: product.description || 'Няма налично описание.',
     },
     {
-      title: 'Specifications',
-      content: product.specifications || 'No specifications available.',
+      title: 'Спецификации',
+      content: product.specifications || 'Няма налични спецификации.',
     },
     {
-      title: 'Delivery and Returns',
-      content: `Shipping: We ship worldwide. Standard shipping takes 5-10 business days.
+      title: 'Доставка и връщане',
+      content: `Доставка: Доставяме по целия свят. Стандартната доставка отнема 5-10 работни дни.
 
-Returns: We accept returns within 30 days of delivery. Items must be unused and in original packaging.
+Връщане: Приемаме връщания в рамките на 30 дни от доставката. Продуктите трябва да са неизползвани и в оригинална опаковка.
 
-For any questions about delivery or returns, please contact our support team.`,
+За всякакви въпроси относно доставката или връщането, моля свържете се с нашия екип за поддръжка.`,
     },
     {
-      title: 'FAQ',
-      content: `Q: What materials are used?
-A: Our products are 3D printed using premium PLA or PETG materials, depending on the design requirements.
+      title: 'Често задавани въпроси',
+      content: `В: Какви материали се използват?
+О: Нашите продукти са 3D принтирани с използване на премиум PLA или PETG материали, в зависимост от изискванията на дизайна.
 
-Q: Are the colors exactly as shown?
-A: We strive to display colors as accurately as possible, but slight variations may occur due to monitor settings.
+В: Цветовете точно ли са като показаните?
+О: Стремим се да показваме цветовете възможно най-точно, но може да има леки вариации поради настройките на монитора.
 
-Q: Can I request customizations?
-A: Yes! Contact us for custom color or size requests.`,
+В: Мога ли да поръчам персонализация?
+О: Да! Свържете се с нас за заявки за персонализиран цвят или размер.`,
     },
   ];
 
@@ -73,7 +73,7 @@ A: Yes! Contact us for custom color or size requests.`,
       {product.colors && product.colors.length > 0 && (
         <div className="mb-6">
           <label className="block text-sm text-gray-600 mb-2">
-            Color: <span className="text-black font-medium">{selectedColor}</span>
+            Цвят: <span className="text-black font-medium">{selectedColor}</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {product.colors.map((color) => (
@@ -97,7 +97,7 @@ A: Yes! Contact us for custom color or size requests.`,
       {product.sizes && product.sizes.length > 0 && (
         <div className="mb-6">
           <label className="block text-sm text-gray-600 mb-2">
-            Size: <span className="text-black font-medium">{selectedSize}</span>
+            Размер: <span className="text-black font-medium">{selectedSize}</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {product.sizes.map((size) => (
@@ -119,7 +119,7 @@ A: Yes! Contact us for custom color or size requests.`,
 
       {/* Quantity selector */}
       <div className="mb-6">
-        <label className="block text-sm text-gray-600 mb-2">Quantity</label>
+        <label className="block text-sm text-gray-600 mb-2">Количество</label>
         <QuantitySelector
           quantity={quantity}
           onQuantityChange={setQuantity}

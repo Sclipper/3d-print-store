@@ -49,7 +49,7 @@ export default function CartDrawer() {
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
+      alert('Неуспешно стартиране на плащане. Моля, опитайте отново.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -74,11 +74,11 @@ export default function CartDrawer() {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h2 className="text-lg font-medium">Your Cart ({cart.totalItems})</h2>
+            <h2 className="text-lg font-medium">Вашата количка ({cart.totalItems})</h2>
             <button
               onClick={closeCart}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              aria-label="Close cart"
+              aria-label="Затвори количка"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -93,12 +93,12 @@ export default function CartDrawer() {
                 <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <p className="text-gray-500 mb-4">Your cart is empty</p>
+                <p className="text-gray-500 mb-4">Количката ви е празна</p>
                 <button
                   onClick={closeCart}
                   className="text-sm text-black underline hover:no-underline"
                 >
-                  Continue shopping
+                  Продължете пазаруването
                 </button>
               </div>
             ) : (
@@ -153,7 +153,7 @@ export default function CartDrawer() {
                               onClick={() => updateQuantity(itemKey, item.quantity - 1)}
                               disabled={item.quantity <= 1}
                               className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                              aria-label="Decrease quantity"
+                              aria-label="Намали количеството"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -164,7 +164,7 @@ export default function CartDrawer() {
                               onClick={() => updateQuantity(itemKey, item.quantity + 1)}
                               disabled={item.quantity >= item.stockQuantity}
                               className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                              aria-label="Increase quantity"
+                              aria-label="Увеличи количеството"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -175,7 +175,7 @@ export default function CartDrawer() {
                             onClick={() => removeItem(itemKey)}
                             className="text-sm text-gray-500 hover:text-black underline"
                           >
-                            Remove
+                            Премахни
                           </button>
                         </div>
                       </div>
@@ -195,10 +195,10 @@ export default function CartDrawer() {
           {cart.items.length > 0 && (
             <div className="border-t border-gray-100 px-6 py-4 space-y-4">
               <div className="flex items-center justify-between text-base font-medium">
-                <span>Subtotal</span>
+                <span>Междинна сума</span>
                 <span>${cart.totalPrice.toFixed(2)}</span>
               </div>
-              <p className="text-sm text-gray-500">Shipping calculated at checkout</p>
+              <p className="text-sm text-gray-500">Доставката се изчислява при плащане</p>
               <button
                 onClick={handleCheckout}
                 disabled={isCheckingOut}
@@ -210,17 +210,17 @@ export default function CartDrawer() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Processing...
+                    Обработка...
                   </span>
                 ) : (
-                  'Checkout'
+                  'Плащане'
                 )}
               </button>
               <button
                 onClick={closeCart}
                 className="w-full py-2 text-sm text-gray-600 hover:text-black"
               >
-                Continue shopping
+                Продължете пазаруването
               </button>
             </div>
           )}

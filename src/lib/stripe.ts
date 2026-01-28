@@ -22,7 +22,7 @@ export async function createCheckoutSession(params: {
 }): Promise<Stripe.Checkout.Session> {
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = params.items.map((item) => ({
     price_data: {
-      currency: 'usd',
+      currency: 'eur',
       product_data: {
         name: item.productName,
         images: item.imageUrl ? [item.imageUrl] : [],
@@ -49,8 +49,38 @@ export async function createCheckoutSession(params: {
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,
     shipping_address_collection: {
-      allowed_countries: ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'ES', 'IT', 'NL'],
+      allowed_countries: ['BG'], // Bulgaria only
     },
+    billing_address_collection: 'required',
+    phone_number_collection: {
+      enabled: true, // Require phone number
+    },
+    tax_id_collection: {
+      enabled: true, // Allow customers to enter VAT numbers
+    },
+    allow_promotion_codes: true, // Allow coupon/promotion codes
+    shipping_options: [
+      {
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: {
+            amount: 250, // 2.50 EUR in cents
+            currency: 'eur',
+          },
+          display_name: 'Ekont Delivery',
+          delivery_estimate: {
+            minimum: {
+              unit: 'business_day',
+              value: 2,
+            },
+            maximum: {
+              unit: 'business_day',
+              value: 5,
+            },
+          },
+        },
+      },
+    ],
     metadata,
   });
 

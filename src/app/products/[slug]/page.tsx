@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
   if (!product) {
     return {
-      title: 'Product Not Found | 3D Print Store',
+      title: 'Продуктът не е намерен | 3D Принт Магазин',
     };
   }
 
   return {
-    title: `${product.name} | 3D Print Store`,
+    title: `${product.name} | 3D Принт Магазин`,
     description: product.shortDescription || product.description,
     openGraph: {
       images: product.images[0]?.url ? [product.images[0].url] : [],
@@ -56,7 +56,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="text-sm text-gray-500">
             <Link href="/" className="hover:text-black transition-colors">
-              Home
+              Начало
             </Link>
             <span className="mx-2">/</span>
             {product.categoryName && (
@@ -92,7 +92,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {relatedProducts.length > 0 && (
         <section className="py-16 border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-light mb-8">You may also like</h2>
+            <h2 className="text-2xl font-light mb-8">Може да харесате също</h2>
             <ProductGrid products={relatedProducts} columns={3} />
           </div>
         </section>

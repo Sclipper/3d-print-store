@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
   if (!category) {
     return {
-      title: 'Category Not Found | 3D Print Store',
+      title: 'Категорията не е намерена | 3D Принт Магазин',
     };
   }
 
   return {
-    title: `${category.name} | 3D Print Store`,
+    title: `${category.name} | 3D Принт Магазин`,
     description: category.description || `Browse our ${category.name} collection.`,
   };
 }
@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="text-sm text-gray-500">
             <Link href="/" className="hover:text-black transition-colors">
-              Home
+              Начало
             </Link>
             <span className="mx-2">/</span>
             <span className="text-black">{category.name}</span>
@@ -92,7 +92,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
           <div className="flex items-center justify-between mb-8">
             <span className="text-sm text-gray-500">
-              {products.length} {products.length === 1 ? 'product' : 'products'}
+              {products.length} {products.length === 1 ? 'продукт' : 'продукти'}
             </span>
           </div>
 

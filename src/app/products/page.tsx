@@ -6,8 +6,8 @@ import { Product } from '@/lib/types';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata = {
-  title: 'All Products | 3D Print Store',
-  description: 'Browse our full collection of premium 3D printed designs.',
+  title: 'Всички продукти | 3D Принт Магазин',
+  description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни.',
 };
 
 export default async function ProductsPage() {
@@ -26,10 +26,10 @@ export default async function ProductsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="text-sm text-gray-500">
             <a href="/" className="hover:text-black transition-colors">
-              Home
+              Начало
             </a>
             <span className="mx-2">/</span>
-            <span className="text-black">Products</span>
+            <span className="text-black">Продукти</span>
           </nav>
         </div>
       </div>
@@ -38,9 +38,9 @@ export default async function ProductsPage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-light">All Products</h1>
+            <h1 className="text-3xl font-light">Всички продукти</h1>
             <span className="text-sm text-gray-500">
-              {products.length} {products.length === 1 ? 'product' : 'products'}
+              {products.length} {products.length === 1 ? 'продукт' : 'продукти'}
             </span>
           </div>
 

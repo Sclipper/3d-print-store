@@ -25,17 +25,17 @@ export default async function HomePage() {
       <section className="bg-gray-50 py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl lg:text-6xl font-light tracking-tight mb-6">
-            Premium 3D Prints
+            Премиум 3D Принтове
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Discover our collection of beautifully crafted 3D printed designs.
-            Each piece is made with precision and care.
+            Открийте нашата колекция от красиво изработени 3D принтирани дизайни.
+            Всяко изделие е създадено с прецизност и грижа.
           </p>
           <Link
             href="/products"
             className="inline-block px-8 py-3 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
           >
-            Shop All Products
+            Вижте всички продукти
           </Link>
         </div>
       </section>
@@ -44,7 +44,7 @@ export default async function HomePage() {
       {categories.length > 0 && (
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-light text-center mb-12">Shop by Category</h2>
+            <h2 className="text-2xl font-light text-center mb-12">Пазарувайте по категория</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories.map((category) => (
                 <Link
@@ -75,12 +75,12 @@ export default async function HomePage() {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-12">
-              <h2 className="text-2xl font-light">Featured Products</h2>
+              <h2 className="text-2xl font-light">Препоръчани продукти</h2>
               <Link
                 href="/products"
                 className="text-sm text-gray-600 hover:text-black transition-colors"
               >
-                View all
+                Вижте всички
               </Link>
             </div>
             <ProductGrid products={featuredProducts} columns={3} />
@@ -92,12 +92,12 @@ export default async function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl font-light mb-6">Crafted with Precision</h2>
+            <h2 className="text-2xl font-light mb-6">Изработено с прецизност</h2>
             <p className="text-gray-600 leading-relaxed">
-              Each of our products is carefully designed and 3D printed using
-              premium materials. We combine cutting-edge technology with
-              artistic vision to create unique pieces that stand out in any
-              space.
+              Всеки от нашите продукти е внимателно проектиран и 3D принтиран
+              с използване на премиум материали. Съчетаваме най-новите технологии
+              с артистична визия, за да създадем уникални изделия, които се
+              отличават във всяко пространство.
             </p>
           </div>
         </div>

@@ -53,7 +53,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Sold out badge */}
         {!product.inStock && (
           <div className="absolute top-4 left-4">
-            <span className="text-xs font-medium text-gray-500">Sold out</span>
+            <span className="text-xs font-medium text-gray-500">Изчерпано</span>
           </div>
         )}
       </div>

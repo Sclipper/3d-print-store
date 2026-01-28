@@ -22,7 +22,7 @@ export default function Header({ categories = [] }: HeaderProps) {
           <button
             className="lg:hidden p-2 -ml-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Open menu"
+            aria-label="Отвори меню"
           >
             <svg
               className="w-6 h-6"
@@ -50,7 +50,7 @@ export default function Header({ categories = [] }: HeaderProps) {
 
           {/* Logo */}
           <Link href="/" className="font-bold text-xl tracking-tight">
-            3D PRINT
+            3D ПРИНТ
           </Link>
 
           {/* Desktop Navigation */}
@@ -59,13 +59,13 @@ export default function Header({ categories = [] }: HeaderProps) {
               href="/"
               className="text-sm text-gray-600 hover:text-black transition-colors"
             >
-              Home
+              Начало
             </Link>
             <Link
               href="/products"
               className="text-sm text-gray-600 hover:text-black transition-colors"
             >
-              All Products
+              Всички продукти
             </Link>
             {categories.map((category) => (
               <Link
@@ -83,7 +83,7 @@ export default function Header({ categories = [] }: HeaderProps) {
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="p-2"
-              aria-label="Search"
+              aria-label="Търсене"
             >
               <svg
                 className="w-5 h-5"
@@ -102,7 +102,7 @@ export default function Header({ categories = [] }: HeaderProps) {
             <button
               onClick={openCart}
               className="p-2 relative"
-              aria-label="Open cart"
+              aria-label="Отвори количка"
             >
               <svg
                 className="w-5 h-5"
@@ -132,7 +132,7 @@ export default function Header({ categories = [] }: HeaderProps) {
             <form className="relative">
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Търсене..."
                 className="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:border-black transition-colors"
               />
               <button
@@ -168,14 +168,14 @@ export default function Header({ categories = [] }: HeaderProps) {
               className="block text-sm text-gray-600 hover:text-black"
               onClick={() => setIsMenuOpen(false)}
             >
-              Home
+              Начало
             </Link>
             <Link
               href="/products"
               className="block text-sm text-gray-600 hover:text-black"
               onClick={() => setIsMenuOpen(false)}
             >
-              All Products
+              Всички продукти
             </Link>
             {categories.map((category) => (
               <Link

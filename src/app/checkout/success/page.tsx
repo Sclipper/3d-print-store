@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Order Confirmed | 3D Print Store',
-  description: 'Thank you for your purchase!',
+  title: 'Поръчката е потвърдена | 3D Принт Магазин',
+  description: 'Благодарим ви за покупката!',
 };
 
 interface SuccessPageProps {
@@ -32,16 +32,16 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           </svg>
         </div>
 
-        <h1 className="text-2xl font-light mb-4">Thank you for your order!</h1>
+        <h1 className="text-2xl font-light mb-4">Благодарим ви за поръчката!</h1>
         
         <p className="text-gray-600 mb-6">
-          Your payment has been processed successfully. We&apos;ll send you an email
-          confirmation with your order details shortly.
+          Плащането ви е обработено успешно. Ще ви изпратим имейл
+          потвърждение с детайлите на поръчката скоро.
         </p>
 
         {session_id && (
           <p className="text-sm text-gray-500 mb-6">
-            Order reference: <span className="font-mono">{session_id.slice(0, 20)}...</span>
+            Референция на поръчката: <span className="font-mono">{session_id.slice(0, 20)}...</span>
           </p>
         )}
 
@@ -50,30 +50,30 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
             href="/products"
             className="block w-full py-3 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
           >
-            Continue Shopping
+            Продължете пазаруването
           </Link>
           <Link
             href="/"
             className="block w-full py-3 border border-gray-200 text-sm font-medium hover:border-black transition-colors"
           >
-            Return to Home
+            Към началната страница
           </Link>
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-100">
-          <h2 className="text-sm font-medium mb-4">What happens next?</h2>
+          <h2 className="text-sm font-medium mb-4">Какво следва?</h2>
           <ul className="text-sm text-gray-600 space-y-2 text-left">
             <li className="flex items-start gap-2">
               <span className="text-gray-400">1.</span>
-              You&apos;ll receive an order confirmation email
+              Ще получите имейл потвърждение на поръчката
             </li>
             <li className="flex items-start gap-2">
               <span className="text-gray-400">2.</span>
-              We&apos;ll prepare your item for shipping
+              Ще подготвим артикула ви за доставка
             </li>
             <li className="flex items-start gap-2">
               <span className="text-gray-400">3.</span>
-              You&apos;ll receive tracking information once shipped
+              Ще получите информация за проследяване след изпращане
             </li>
           </ul>
         </div>
