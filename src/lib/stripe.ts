@@ -68,7 +68,7 @@ export async function createCheckoutSession(params: {
             amount: 250, // 2.50 EUR in cents
             currency: 'eur',
           },
-          display_name: 'Ekont Delivery',
+          display_name: 'Доставка с Еконт',
           delivery_estimate: {
             minimum: {
               unit: 'business_day',
@@ -82,6 +82,14 @@ export async function createCheckoutSession(params: {
         },
       },
     ],
+    custom_text: {
+      shipping_address: {
+        message: 'Доставката се извършва с Еконт. Ако желаете доставка до офис на Еконт, моля въведете адреса на офиса вместо вашия домашен адрес.',
+      },
+      submit: {
+        message: 'Ще получите потвърждение на имейла си с детайли за доставката.',
+      },
+    },
     metadata,
   });
 
