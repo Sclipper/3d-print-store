@@ -32,6 +32,9 @@ export async function POST(request: NextRequest) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
 
+      console.log('Processing checkout.session.completed:', session.id);
+      console.log('Session metadata:', session.metadata);
+
       // Get full session details
       const fullSession = await getCheckoutSession(session.id);
 
@@ -39,11 +42,9 @@ export async function POST(request: NextRequest) {
       const itemCount = parseInt(session.metadata?.itemCount || '0', 10);
 
       if (itemCount === 0) {
-        console.error('No items found in session metadata');
-        return NextResponse.json(
-          { error: 'No items in order' },
-          { status: 400 }
-        );
+        console.log('No items in metadata, skipping Airtable order creation (this may be a test webhook)');
+        // Return success anyway - this handles test webhooks from Stripe CLI
+        return NextResponse.json({ received: true });
       }
 
       // Parse all items from metadata
@@ -55,6 +56,8 @@ export async function POST(request: NextRequest) {
           items.push({ productId, quantity });
         }
       }
+
+      console.log('Parsed items:', items);
 
       // Build shipping address - cast session to access shipping details
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,9 +80,13 @@ export async function POST(request: NextRequest) {
         country: shippingInfo?.address?.country || '',
       };
 
+      console.log('Shipping address:', shippingAddress);
+      console.log('Customer:', session.customer_details?.name, session.customer_details?.email);
+
       // Create order in Airtable for each item
       try {
         for (const item of items) {
+          console.log('Creating Airtable order for product:', item.productId);
           await createOrder({
             orderId: session.id,
             customerEmail: session.customer_details?.email || '',
@@ -89,9 +96,10 @@ export async function POST(request: NextRequest) {
             totalAmount: (session.amount_total || 0) / 100, // Convert from cents
             shippingAddress,
           });
+          console.log('Order created for product:', item.productId);
         }
 
-        console.log('Orders created successfully:', session.id, `(${items.length} items)`);
+        console.log('All orders created successfully:', session.id, `(${items.length} items)`);
       } catch (err) {
         console.error('Failed to create order in Airtable:', err);
         // Don't fail the webhook - Stripe will retry

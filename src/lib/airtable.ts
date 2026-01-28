@@ -229,17 +229,24 @@ export async function createOrder(orderData: {
     throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
 
-  const record = await base(ORDERS_TABLE).create({
+  // Build the order fields - only include phone if it exists
+  const orderFields: Partial<Airtable.FieldSet> = {
     'Order ID': orderData.orderId,
     'Customer Email': orderData.customerEmail,
     'Customer Name': orderData.customerName,
-    'Customer Phone': orderData.shippingAddress.phone || '',
     'Product': [orderData.productId],
     'Quantity': orderData.quantity,
     'Total Amount': orderData.totalAmount,
     'Status': 'paid',
     'Shipping Address': JSON.stringify(orderData.shippingAddress),
-  });
+  };
+
+  // Add phone number if available
+  if (orderData.shippingAddress.phone) {
+    orderFields['Customer Phone'] = orderData.shippingAddress.phone;
+  }
+
+  const record = await base(ORDERS_TABLE).create(orderFields as Partial<Airtable.FieldSet>);
 
   return {
     id: record.id,

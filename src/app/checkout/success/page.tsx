@@ -1,16 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
+import { useCart } from '@/lib/cart-context';
+import { useSearchParams } from 'next/navigation';
 
-export const metadata = {
-  title: 'Поръчката е потвърдена | 3D Принт Магазин',
-  description: 'Благодарим ви за покупката!',
-};
+export default function CheckoutSuccessPage() {
+  const { clearCart } = useCart();
+  const searchParams = useSearchParams();
+  const session_id = searchParams.get('session_id');
+  const hasCleared = useRef(false);
 
-interface SuccessPageProps {
-  searchParams: Promise<{ session_id?: string }>;
-}
-
-export default async function CheckoutSuccessPage({ searchParams }: SuccessPageProps) {
-  const { session_id } = await searchParams;
+  // Clear the cart on successful checkout (only once)
+  useEffect(() => {
+    if (!hasCleared.current) {
+      clearCart();
+      hasCleared.current = true;
+    }
+  }, [clearCart]);
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
