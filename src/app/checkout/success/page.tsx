@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useCart } from '@/lib/cart-context';
 import { useSearchParams } from 'next/navigation';
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const { clearCart } = useCart();
   const searchParams = useSearchParams();
   const session_id = searchParams.get('session_id');
@@ -86,5 +86,17 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-gray-500">Зареждане...</div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 }
