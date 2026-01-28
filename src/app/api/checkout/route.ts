@@ -6,14 +6,24 @@ export async function POST(request: NextRequest) {
   try {
     const body: CheckoutRequest = await request.json();
 
-    const { productId, productName, price, quantity, imageUrl } = body;
+    const { items } = body;
 
     // Validate required fields
-    if (!productId || !productName || !price || !quantity) {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: 'No items provided' },
         { status: 400 }
       );
+    }
+
+    // Validate each item
+    for (const item of items) {
+      if (!item.productId || !item.productName || !item.price || !item.quantity) {
+        return NextResponse.json(
+          { success: false, error: 'Missing required fields in cart items' },
+          { status: 400 }
+        );
+      }
     }
 
     // Get base URL for redirect
@@ -21,11 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe checkout session
     const session = await createCheckoutSession({
-      productId,
-      productName,
-      price,
-      quantity,
-      imageUrl,
+      items,
       successUrl: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${baseUrl}/products`,
     });

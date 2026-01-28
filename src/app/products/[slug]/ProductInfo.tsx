@@ -12,6 +12,12 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(
+    product.colors?.[0]
+  );
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(
+    product.sizes?.[0]
+  );
 
   const accordionItems = [
     {
@@ -63,6 +69,54 @@ A: Yes! Contact us for custom color or size requests.`,
         <p className="text-gray-600 mb-6">{product.shortDescription}</p>
       )}
 
+      {/* Color selector */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="mb-6">
+          <label className="block text-sm text-gray-600 mb-2">
+            Color: <span className="text-black font-medium">{selectedColor}</span>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {product.colors.map((color) => (
+              <button
+                key={color}
+                onClick={() => setSelectedColor(color)}
+                className={`px-4 py-2 border text-sm transition-colors ${
+                  selectedColor === color
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 hover:border-black'
+                }`}
+              >
+                {color}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Size selector */}
+      {product.sizes && product.sizes.length > 0 && (
+        <div className="mb-6">
+          <label className="block text-sm text-gray-600 mb-2">
+            Size: <span className="text-black font-medium">{selectedSize}</span>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {product.sizes.map((size) => (
+              <button
+                key={size}
+                onClick={() => setSelectedSize(size)}
+                className={`px-4 py-2 border text-sm transition-colors ${
+                  selectedSize === size
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 hover:border-black'
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Quantity selector */}
       <div className="mb-6">
         <label className="block text-sm text-gray-600 mb-2">Quantity</label>
@@ -76,7 +130,12 @@ A: Yes! Contact us for custom color or size requests.`,
 
       {/* Buy button */}
       <div className="mb-8">
-        <BuyButton product={product} quantity={quantity} />
+        <BuyButton
+          product={product}
+          quantity={quantity}
+          selectedColor={selectedColor}
+          selectedSize={selectedSize}
+        />
       </div>
 
       {/* Accordion sections */}

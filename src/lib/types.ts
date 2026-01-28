@@ -28,6 +28,8 @@ export interface Product {
   specifications?: string;
   featured: boolean;
   createdAt: string;
+  colors?: string[];
+  sizes?: string[];
 }
 
 // Category Types
@@ -78,13 +80,35 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-// Checkout Types
-export interface CheckoutRequest {
+// Cart Types
+export interface CartItem {
   productId: string;
   productName: string;
+  productSlug: string;
   price: number;
   quantity: number;
   imageUrl?: string;
+  inStock: boolean;
+  stockQuantity: number;
+  selectedColor?: string;
+  selectedSize?: string;
+}
+
+export interface Cart {
+  items: CartItem[];
+  totalItems: number;
+  totalPrice: number;
+}
+
+// Checkout Types
+export interface CheckoutRequest {
+  items: {
+    productId: string;
+    productName: string;
+    price: number;
+    quantity: number;
+    imageUrl?: string;
+  }[];
 }
 
 export interface CheckoutResponse {

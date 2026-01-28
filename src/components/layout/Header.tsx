@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Category } from '@/lib/types';
+import { useCart } from '@/lib/cart-context';
 
 interface HeaderProps {
   categories?: Category[];
@@ -11,6 +12,7 @@ interface HeaderProps {
 export default function Header({ categories = [] }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { cart, openCart } = useCart();
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
@@ -96,6 +98,30 @@ export default function Header({ categories = [] }: HeaderProps) {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
+            </button>
+            <button
+              onClick={openCart}
+              className="p-2 relative"
+              aria-label="Open cart"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+              </svg>
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-black text-white text-xs rounded-full flex items-center justify-center">
+                  {cart.totalItems > 99 ? '99+' : cart.totalItems}
+                </span>
+              )}
             </button>
           </div>
         </div>

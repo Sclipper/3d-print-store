@@ -1,6 +1,5 @@
 import Airtable from 'airtable';
 import { Product, Category, Order, ProductImage, ShippingAddress } from './types';
-import { mockProducts, mockCategories } from './mock-data';
 
 // Check if Airtable is configured
 const isAirtableConfigured = !!(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
@@ -40,6 +39,18 @@ function transformAttachment(attachment: ExtendedAttachment): ProductImage {
   };
 }
 
+// Helper function to parse variant string (comma or newline separated)
+function parseVariantOptions(value: unknown): string[] | undefined {
+  if (!value) return undefined;
+  if (Array.isArray(value)) return value as string[];
+  if (typeof value === 'string') {
+    // Split by comma or newline and trim whitespace
+    const options = value.split(/[,\n]/).map(s => s.trim()).filter(s => s.length > 0);
+    return options.length > 0 ? options : undefined;
+  }
+  return undefined;
+}
+
 // Helper function to transform Airtable record to Product
 function transformProduct(record: Airtable.Record<Airtable.FieldSet>): Product {
   const fields = record.fields;
@@ -61,6 +72,8 @@ function transformProduct(record: Airtable.Record<Airtable.FieldSet>): Product {
     specifications: fields['Specifications'] as string | undefined,
     featured: (fields['Featured'] as boolean) ?? false,
     createdAt: (fields['Created'] as string) || new Date().toISOString(),
+    colors: parseVariantOptions(fields['Color']),
+    sizes: parseVariantOptions(fields['Size']),
   };
 }
 
@@ -86,29 +99,12 @@ function transformCategory(record: Airtable.Record<Airtable.FieldSet>): Category
 // Get all products
 export async function getProducts(options?: {
   categorySlug?: string;
+  categoryId?: string;
   featured?: boolean;
   limit?: number;
 }): Promise<Product[]> {
-  // Use mock data if Airtable is not configured
   if (!isAirtableConfigured || !base) {
-    let products = [...mockProducts];
-    
-    if (options?.featured) {
-      products = products.filter(p => p.featured);
-    }
-    
-    if (options?.categorySlug) {
-      products = products.filter(p => {
-        const category = mockCategories.find(c => c.id === p.categoryId);
-        return category?.slug === options.categorySlug;
-      });
-    }
-    
-    if (options?.limit) {
-      products = products.slice(0, options.limit);
-    }
-    
-    return products;
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
 
   const filterFormulas: string[] = [];
@@ -117,8 +113,22 @@ export async function getProducts(options?: {
     filterFormulas.push('{Featured} = TRUE()');
   }
   
+  // If categorySlug is provided, get the category to find its name for filtering
+  let categoryNameToFilter: string | undefined;
   if (options?.categorySlug) {
-    filterFormulas.push(`{Category Slug} = '${options.categorySlug}'`);
+    const category = await getCategoryBySlug(options.categorySlug);
+    if (category) {
+      categoryNameToFilter = category.name;
+    }
+  }
+  
+  if (categoryNameToFilter) {
+    // Filter by category name - ARRAYJOIN on linked fields returns the primary field (name)
+    const escapedName = categoryNameToFilter.replace(/'/g, "\\'");
+    filterFormulas.push(`FIND('${escapedName}', ARRAYJOIN({Category})) > 0`);
+  } else if (options?.categoryId) {
+    // If categoryId is provided directly, we can't easily filter by ID in Airtable linked fields
+    // The caller should use categorySlug instead
   }
   
   const filterByFormula = filterFormulas.length > 0
@@ -138,14 +148,17 @@ export async function getProducts(options?: {
 
 // Get a single product by slug
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  // Use mock data if Airtable is not configured
   if (!isAirtableConfigured || !base) {
-    return mockProducts.find(p => p.slug === slug) || null;
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
+
+  // Decode URI component and escape single quotes for Airtable formula
+  const decodedSlug = decodeURIComponent(slug);
+  const escapedSlug = decodedSlug.replace(/'/g, "\\'");
 
   const records = await base(PRODUCTS_TABLE)
     .select({
-      filterByFormula: `{Slug} = '${slug}'`,
+      filterByFormula: `{Slug} = '${escapedSlug}'`,
       maxRecords: 1,
     })
     .all();
@@ -155,9 +168,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 // Get a single product by ID
 export async function getProductById(id: string): Promise<Product | null> {
-  // Use mock data if Airtable is not configured
   if (!isAirtableConfigured || !base) {
-    return mockProducts.find(p => p.id === id) || null;
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
 
   try {
@@ -170,9 +182,8 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 // Get all categories
 export async function getCategories(): Promise<Category[]> {
-  // Use mock data if Airtable is not configured
   if (!isAirtableConfigured || !base) {
-    return mockCategories;
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
 
   const records = await base(CATEGORIES_TABLE)
@@ -186,14 +197,17 @@ export async function getCategories(): Promise<Category[]> {
 
 // Get a single category by slug
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  // Use mock data if Airtable is not configured
   if (!isAirtableConfigured || !base) {
-    return mockCategories.find(c => c.slug === slug) || null;
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
+
+  // Decode URI component and escape single quotes for Airtable formula
+  const decodedSlug = decodeURIComponent(slug);
+  const escapedSlug = decodedSlug.replace(/'/g, "\\'");
 
   const records = await base(CATEGORIES_TABLE)
     .select({
-      filterByFormula: `{Slug} = '${slug}'`,
+      filterByFormula: `{Slug} = '${escapedSlug}'`,
       maxRecords: 1,
     })
     .all();
@@ -211,21 +225,8 @@ export async function createOrder(orderData: {
   totalAmount: number;
   shippingAddress: ShippingAddress;
 }): Promise<Order> {
-  // If Airtable is not configured, return a mock order
   if (!isAirtableConfigured || !base) {
-    console.log('Mock order created:', orderData);
-    return {
-      id: `mock-${Date.now()}`,
-      orderId: orderData.orderId,
-      customerEmail: orderData.customerEmail,
-      customerName: orderData.customerName,
-      productId: orderData.productId,
-      quantity: orderData.quantity,
-      totalAmount: orderData.totalAmount,
-      status: 'paid',
-      shippingAddress: orderData.shippingAddress,
-      createdAt: new Date().toISOString(),
-    };
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
 
   const record = await base(ORDERS_TABLE).create({
@@ -259,8 +260,7 @@ export async function updateOrderStatus(
   status: Order['status']
 ): Promise<void> {
   if (!isAirtableConfigured || !base) {
-    console.log('Mock order status update:', recordId, status);
-    return;
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
 
   await base(ORDERS_TABLE).update(recordId, {

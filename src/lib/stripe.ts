@@ -6,29 +6,41 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   typescript: true,
 });
 
-// Create a checkout session
-export async function createCheckoutSession(params: {
+interface CheckoutItem {
   productId: string;
   productName: string;
   price: number;
   quantity: number;
   imageUrl?: string;
+}
+
+// Create a checkout session
+export async function createCheckoutSession(params: {
+  items: CheckoutItem[];
   successUrl: string;
   cancelUrl: string;
 }): Promise<Stripe.Checkout.Session> {
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-    {
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: params.productName,
-          images: params.imageUrl ? [params.imageUrl] : [],
-        },
-        unit_amount: Math.round(params.price * 100), // Convert to cents
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = params.items.map((item) => ({
+    price_data: {
+      currency: 'usd',
+      product_data: {
+        name: item.productName,
+        images: item.imageUrl ? [item.imageUrl] : [],
       },
-      quantity: params.quantity,
+      unit_amount: Math.round(item.price * 100), // Convert to cents
     },
-  ];
+    quantity: item.quantity,
+  }));
+
+  // Create metadata with all product IDs and quantities
+  const metadata: Record<string, string> = {
+    itemCount: params.items.length.toString(),
+  };
+  
+  params.items.forEach((item, index) => {
+    metadata[`product_${index}_id`] = item.productId;
+    metadata[`product_${index}_quantity`] = item.quantity.toString();
+  });
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
@@ -39,10 +51,7 @@ export async function createCheckoutSession(params: {
     shipping_address_collection: {
       allowed_countries: ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'ES', 'IT', 'NL'],
     },
-    metadata: {
-      productId: params.productId,
-      quantity: params.quantity.toString(),
-    },
+    metadata,
   });
 
   return session;
