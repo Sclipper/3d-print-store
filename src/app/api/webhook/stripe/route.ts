@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { constructWebhookEvent, getCheckoutSession } from '@/lib/stripe';
-import { createOrderWithItems } from '@/lib/airtable';
+import { createOrderWithItems, getOrderByStripeSessionId } from '@/lib/airtable';
 import { ShippingAddress } from '@/lib/types';
 import Stripe from 'stripe';
 
@@ -34,6 +34,13 @@ export async function POST(request: NextRequest) {
 
       console.log('Processing checkout.session.completed:', session.id);
       console.log('Session metadata:', session.metadata);
+
+      // Check if order already exists (prevents duplicates from webhook retries)
+      const existingOrder = await getOrderByStripeSessionId(session.id);
+      if (existingOrder) {
+        console.log('Order already exists for session:', session.id, '- skipping duplicate creation');
+        return NextResponse.json({ received: true });
+      }
 
       // Get full session details
       const fullSession = await getCheckoutSession(session.id);

@@ -216,6 +216,40 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   return records.length > 0 ? transformCategory(records[0]) : null;
 }
 
+// Check if an order already exists by Stripe session ID
+export async function getOrderByStripeSessionId(stripeSessionId: string): Promise<Order | null> {
+  if (!isAirtableConfigured || !base) {
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
+  }
+
+  const escapedId = stripeSessionId.replace(/'/g, "\\'");
+  
+  const records = await base(ORDERS_TABLE)
+    .select({
+      filterByFormula: `{Order ID} = '${escapedId}'`,
+      maxRecords: 1,
+    })
+    .all();
+
+  if (records.length === 0) {
+    return null;
+  }
+
+  const record = records[0];
+  const fields = record.fields;
+  
+  return {
+    id: record.id,
+    orderId: (fields['Order ID'] as string) || '',
+    customerEmail: (fields['Customer Email'] as string) || '',
+    customerName: (fields['Customer Name'] as string) || '',
+    totalAmount: (fields['Total Amount'] as number) || 0,
+    status: (fields['Status'] as Order['status']) || 'pending',
+    shippingAddress: JSON.parse((fields['Shipping Address'] as string) || '{}'),
+    createdAt: (fields['Created'] as string) || new Date().toISOString(),
+  };
+}
+
 // Create an order (order-level information only)
 export async function createOrder(orderData: {
   orderId: string;
