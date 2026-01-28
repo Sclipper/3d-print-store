@@ -124,7 +124,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Bemu"
                 width={100}
                 height={32}

@@ -52,7 +52,7 @@ export default function Header({ categories = [] }: HeaderProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo.jpg"
+              src="/logo.png"
               alt="Bemu"
               width={192}
               height={64}
