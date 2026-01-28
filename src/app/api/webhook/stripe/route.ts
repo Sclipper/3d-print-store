@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { constructWebhookEvent, getCheckoutSession } from '@/lib/stripe';
-import { createOrderWithItems, getOrderByStripeSessionId } from '@/lib/airtable';
+import { createOrderWithItems } from '@/lib/airtable';
 import { ShippingAddress } from '@/lib/types';
 import Stripe from 'stripe';
 
@@ -34,13 +34,6 @@ export async function POST(request: NextRequest) {
 
       console.log('Processing checkout.session.completed:', session.id);
       console.log('Session metadata:', session.metadata);
-
-      // Check if order already exists (prevents duplicates from webhook retries)
-      const existingOrder = await getOrderByStripeSessionId(session.id);
-      if (existingOrder) {
-        console.log('Order already exists for session:', session.id, '- skipping duplicate creation');
-        return NextResponse.json({ received: true });
-      }
 
       // Get full session details
       const fullSession = await getCheckoutSession(session.id);
@@ -91,10 +84,10 @@ export async function POST(request: NextRequest) {
       console.log('Shipping address:', shippingAddress);
       console.log('Customer:', session.customer_details?.name, session.customer_details?.email);
 
-      // Create order with all line items in Airtable
+      // Create order with all line items in Airtable (idempotent - won't create duplicates)
       try {
         console.log('Creating Airtable order with items...');
-        const { order, orderItems } = await createOrderWithItems({
+        const { order, orderItems, alreadyExisted } = await createOrderWithItems({
           orderId: session.id,
           customerEmail: session.customer_details?.email || '',
           customerName: session.customer_details?.name || '',
@@ -103,11 +96,15 @@ export async function POST(request: NextRequest) {
           items,
         });
 
-        console.log('Order created successfully:', order.id);
-        console.log('Order items created:', orderItems.length);
-        orderItems.forEach((item, index) => {
-          console.log(`  Item ${index + 1}: Product ${item.productId}, Qty: ${item.quantity}, Price: $${item.priceEach}`);
-        });
+        if (alreadyExisted) {
+          console.log('Order already existed for session:', session.id, '- skipped duplicate creation');
+        } else {
+          console.log('Order created successfully:', order.id);
+          console.log('Order items created:', orderItems.length);
+          orderItems.forEach((item, index) => {
+            console.log(`  Item ${index + 1}: Product ${item.productId}, Qty: ${item.quantity}, Price: $${item.priceEach}`);
+          });
+        }
       } catch (err) {
         console.error('Failed to create order in Airtable:', err);
         // Don't fail the webhook - Stripe will retry

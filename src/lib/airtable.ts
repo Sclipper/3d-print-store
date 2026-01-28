@@ -250,6 +250,36 @@ export async function getOrderByStripeSessionId(stripeSessionId: string): Promis
   };
 }
 
+// Get all orders by Stripe session ID (for duplicate detection)
+async function getAllOrdersByStripeSessionId(stripeSessionId: string): Promise<{ id: string; createdTime?: string }[]> {
+  if (!isAirtableConfigured || !base) {
+    throw new Error('Airtable is not configured.');
+  }
+
+  const escapedId = stripeSessionId.replace(/'/g, "\\'");
+  
+  const records = await base(ORDERS_TABLE)
+    .select({
+      filterByFormula: `{Order ID} = '${escapedId}'`,
+      sort: [{ field: 'Created', direction: 'asc' }], // Oldest first
+    })
+    .all();
+
+  return records.map(r => ({ 
+    id: r.id, 
+    createdTime: r.fields['Created'] as string | undefined 
+  }));
+}
+
+// Delete an order record by ID
+async function deleteOrderRecord(recordId: string): Promise<void> {
+  if (!isAirtableConfigured || !base) {
+    throw new Error('Airtable is not configured.');
+  }
+  
+  await base(ORDERS_TABLE).destroy(recordId);
+}
+
 // Create an order (order-level information only)
 export async function createOrder(orderData: {
   orderId: string;
@@ -319,7 +349,7 @@ export async function createOrderItem(itemData: {
   };
 }
 
-// Create a complete order with all line items
+// Create a complete order with all line items (idempotent - returns existing order if already created)
 export async function createOrderWithItems(orderData: {
   orderId: string;
   customerEmail: string;
@@ -331,7 +361,14 @@ export async function createOrderWithItems(orderData: {
     quantity: number;
     priceEach: number;
   }[];
-}): Promise<{ order: Order; orderItems: OrderItem[] }> {
+}): Promise<{ order: Order; orderItems: OrderItem[]; alreadyExisted: boolean }> {
+  // Pre-creation check: if order already exists, return it
+  const existingOrder = await getOrderByStripeSessionId(orderData.orderId);
+  if (existingOrder) {
+    console.log(`[Airtable] Order already exists for ${orderData.orderId}, returning existing`);
+    return { order: existingOrder, orderItems: [], alreadyExisted: true };
+  }
+
   // Step 1: Create the Order record
   const order = await createOrder({
     orderId: orderData.orderId,
@@ -341,6 +378,33 @@ export async function createOrderWithItems(orderData: {
     status: 'paid', // Payment confirmed via Stripe webhook
     shippingAddress: orderData.shippingAddress,
   });
+
+  // Post-creation duplicate check: handle race condition
+  // If multiple requests slipped through, keep only the oldest order
+  const allOrders = await getAllOrdersByStripeSessionId(orderData.orderId);
+  if (allOrders.length > 1) {
+    console.log(`[Airtable] Race condition detected: ${allOrders.length} orders found for ${orderData.orderId}`);
+    
+    // Keep the first (oldest) order, delete the rest
+    const oldestOrderId = allOrders[0].id;
+    
+    if (order.id !== oldestOrderId) {
+      // We created a duplicate, delete it and return the original
+      console.log(`[Airtable] Deleting duplicate order ${order.id}, keeping ${oldestOrderId}`);
+      await deleteOrderRecord(order.id);
+      
+      const originalOrder = await getOrderByStripeSessionId(orderData.orderId);
+      if (originalOrder) {
+        return { order: originalOrder, orderItems: [], alreadyExisted: true };
+      }
+    } else {
+      // We created the first one, delete any others
+      for (let i = 1; i < allOrders.length; i++) {
+        console.log(`[Airtable] Deleting duplicate order ${allOrders[i].id}`);
+        await deleteOrderRecord(allOrders[i].id);
+      }
+    }
+  }
 
   // Step 2: Create Order Item records for each product
   const orderItems: OrderItem[] = [];
@@ -354,7 +418,7 @@ export async function createOrderWithItems(orderData: {
     orderItems.push(orderItem);
   }
 
-  return { order, orderItems };
+  return { order, orderItems, alreadyExisted: false };
 }
 
 // Update order status
