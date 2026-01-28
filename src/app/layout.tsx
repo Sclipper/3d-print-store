@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "3D Принт Магазин",
+  title: "Bemu",
   description: "Премиум 3D принтирани дизайни за вашия дом",
 };
 

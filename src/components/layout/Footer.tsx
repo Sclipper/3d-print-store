@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -121,11 +122,17 @@ export default function Footer() {
         {/* Bottom section */}
         <div className="mt-12 pt-8 border-t border-gray-100">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <Link href="/" className="font-bold text-lg tracking-tight">
-              3D ПРИНТ
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.jpg"
+                alt="Bemu"
+                width={100}
+                height={32}
+                className="h-8 w-auto"
+              />
             </Link>
             <p className="text-xs text-gray-500 mt-4 md:mt-0">
-              © {new Date().getFullYear()} 3D Принт Магазин. Всички права запазени.
+              © {new Date().getFullYear()} Bemu. Всички права запазени.
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { Category } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
@@ -49,8 +50,15 @@ export default function Header({ categories = [] }: HeaderProps) {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="font-bold text-xl tracking-tight">
-            3D ПРИНТ
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.jpg"
+              alt="Bemu"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
