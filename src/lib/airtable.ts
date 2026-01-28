@@ -1,5 +1,5 @@
 import Airtable from 'airtable';
-import { Product, Category, Order, ProductImage, ShippingAddress } from './types';
+import { Product, Category, Order, OrderItem, ProductImage, ShippingAddress } from './types';
 
 // Check if Airtable is configured
 const isAirtableConfigured = !!(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
@@ -15,6 +15,7 @@ const base = airtable?.base(process.env.AIRTABLE_BASE_ID || '');
 const PRODUCTS_TABLE = 'Products';
 const CATEGORIES_TABLE = 'Categories';
 const ORDERS_TABLE = 'Orders';
+const ORDER_ITEMS_TABLE = 'Order Items';
 
 // Extended Airtable attachment type with additional properties
 interface ExtendedAttachment extends Airtable.Attachment {
@@ -215,19 +216,20 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   return records.length > 0 ? transformCategory(records[0]) : null;
 }
 
-// Create an order
+// Create an order (order-level information only)
 export async function createOrder(orderData: {
   orderId: string;
   customerEmail: string;
   customerName: string;
-  productId: string;
-  quantity: number;
   totalAmount: number;
+  status?: Order['status'];
   shippingAddress: ShippingAddress;
 }): Promise<Order> {
   if (!isAirtableConfigured || !base) {
     throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
   }
+
+  const status = orderData.status || 'pending';
 
   // Build the order fields
   // Note: Phone number is included in the Shipping Address JSON field
@@ -235,10 +237,8 @@ export async function createOrder(orderData: {
     'Order ID': orderData.orderId,
     'Customer Email': orderData.customerEmail,
     'Customer Name': orderData.customerName,
-    'Product': [orderData.productId],
-    'Quantity': orderData.quantity,
     'Total Amount': orderData.totalAmount,
-    'Status': 'paid',
+    'Status': status,
     'Shipping Address': JSON.stringify(orderData.shippingAddress),
   };
 
@@ -249,13 +249,78 @@ export async function createOrder(orderData: {
     orderId: orderData.orderId,
     customerEmail: orderData.customerEmail,
     customerName: orderData.customerName,
-    productId: orderData.productId,
-    quantity: orderData.quantity,
     totalAmount: orderData.totalAmount,
-    status: 'paid',
+    status,
     shippingAddress: orderData.shippingAddress,
     createdAt: new Date().toISOString(),
   };
+}
+
+// Create an order item (one per product in cart)
+export async function createOrderItem(itemData: {
+  orderRecordId: string; // Record ID from Orders table
+  productRecordId: string; // Record ID from Products table
+  quantity: number;
+  priceEach: number; // Unit price at time of purchase
+}): Promise<OrderItem> {
+  if (!isAirtableConfigured || !base) {
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
+  }
+
+  const itemFields: Partial<Airtable.FieldSet> = {
+    'Order': [itemData.orderRecordId], // Link to Orders table
+    'Product': [itemData.productRecordId], // Link to Products table
+    'Quantity': itemData.quantity,
+    'Price (Each)': itemData.priceEach,
+  };
+
+  const record = await base(ORDER_ITEMS_TABLE).create(itemFields as Partial<Airtable.FieldSet>);
+
+  return {
+    id: record.id,
+    orderId: itemData.orderRecordId,
+    productId: itemData.productRecordId,
+    quantity: itemData.quantity,
+    priceEach: itemData.priceEach,
+  };
+}
+
+// Create a complete order with all line items
+export async function createOrderWithItems(orderData: {
+  orderId: string;
+  customerEmail: string;
+  customerName: string;
+  totalAmount: number;
+  shippingAddress: ShippingAddress;
+  items: {
+    productRecordId: string;
+    quantity: number;
+    priceEach: number;
+  }[];
+}): Promise<{ order: Order; orderItems: OrderItem[] }> {
+  // Step 1: Create the Order record
+  const order = await createOrder({
+    orderId: orderData.orderId,
+    customerEmail: orderData.customerEmail,
+    customerName: orderData.customerName,
+    totalAmount: orderData.totalAmount,
+    status: 'paid', // Payment confirmed via Stripe webhook
+    shippingAddress: orderData.shippingAddress,
+  });
+
+  // Step 2: Create Order Item records for each product
+  const orderItems: OrderItem[] = [];
+  for (const item of orderData.items) {
+    const orderItem = await createOrderItem({
+      orderRecordId: order.id,
+      productRecordId: item.productRecordId,
+      quantity: item.quantity,
+      priceEach: item.priceEach,
+    });
+    orderItems.push(orderItem);
+  }
+
+  return { order, orderItems };
 }
 
 // Update order status

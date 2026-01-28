@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { constructWebhookEvent, getCheckoutSession } from '@/lib/stripe';
-import { createOrder } from '@/lib/airtable';
+import { createOrderWithItems } from '@/lib/airtable';
 import { ShippingAddress } from '@/lib/types';
 import Stripe from 'stripe';
 
@@ -47,13 +47,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ received: true });
       }
 
-      // Parse all items from metadata
-      const items: { productId: string; quantity: number }[] = [];
+      // Parse all items from metadata (including price for historical record)
+      const items: { productRecordId: string; quantity: number; priceEach: number }[] = [];
       for (let i = 0; i < itemCount; i++) {
         const productId = session.metadata?.[`product_${i}_id`];
         const quantity = parseInt(session.metadata?.[`product_${i}_quantity`] || '1', 10);
+        const priceEach = parseFloat(session.metadata?.[`product_${i}_price`] || '0');
         if (productId) {
-          items.push({ productId, quantity });
+          items.push({ productRecordId: productId, quantity, priceEach });
         }
       }
 
@@ -83,23 +84,23 @@ export async function POST(request: NextRequest) {
       console.log('Shipping address:', shippingAddress);
       console.log('Customer:', session.customer_details?.name, session.customer_details?.email);
 
-      // Create order in Airtable for each item
+      // Create order with all line items in Airtable
       try {
-        for (const item of items) {
-          console.log('Creating Airtable order for product:', item.productId);
-          await createOrder({
-            orderId: session.id,
-            customerEmail: session.customer_details?.email || '',
-            customerName: session.customer_details?.name || '',
-            productId: item.productId,
-            quantity: item.quantity,
-            totalAmount: (session.amount_total || 0) / 100, // Convert from cents
-            shippingAddress,
-          });
-          console.log('Order created for product:', item.productId);
-        }
+        console.log('Creating Airtable order with items...');
+        const { order, orderItems } = await createOrderWithItems({
+          orderId: session.id,
+          customerEmail: session.customer_details?.email || '',
+          customerName: session.customer_details?.name || '',
+          totalAmount: (session.amount_total || 0) / 100, // Convert from cents
+          shippingAddress,
+          items,
+        });
 
-        console.log('All orders created successfully:', session.id, `(${items.length} items)`);
+        console.log('Order created successfully:', order.id);
+        console.log('Order items created:', orderItems.length);
+        orderItems.forEach((item, index) => {
+          console.log(`  Item ${index + 1}: Product ${item.productId}, Qty: ${item.quantity}, Price: $${item.priceEach}`);
+        });
       } catch (err) {
         console.error('Failed to create order in Airtable:', err);
         // Don't fail the webhook - Stripe will retry

@@ -54,13 +54,19 @@ export interface Order {
   orderId: string;
   customerEmail: string;
   customerName: string;
-  productId: string;
-  productName?: string;
-  quantity: number;
   totalAmount: number;
   status: 'pending' | 'paid' | 'shipped' | 'delivered';
   shippingAddress: ShippingAddress;
   createdAt: string;
+}
+
+// Order Item Types (one record per product in cart)
+export interface OrderItem {
+  id: string;
+  orderId: string; // Record ID linking to Orders table
+  productId: string; // Record ID linking to Products table
+  quantity: number;
+  priceEach: number; // Price at time of purchase
 }
 
 export interface ShippingAddress {

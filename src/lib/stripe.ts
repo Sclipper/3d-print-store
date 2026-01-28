@@ -32,7 +32,7 @@ export async function createCheckoutSession(params: {
     quantity: item.quantity,
   }));
 
-  // Create metadata with all product IDs and quantities
+  // Create metadata with all product IDs, quantities, and prices
   const metadata: Record<string, string> = {
     itemCount: params.items.length.toString(),
   };
@@ -40,6 +40,7 @@ export async function createCheckoutSession(params: {
   params.items.forEach((item, index) => {
     metadata[`product_${index}_id`] = item.productId;
     metadata[`product_${index}_quantity`] = item.quantity.toString();
+    metadata[`product_${index}_price`] = item.price.toString(); // Store unit price for historical record
   });
 
   const session = await stripe.checkout.sessions.create({
