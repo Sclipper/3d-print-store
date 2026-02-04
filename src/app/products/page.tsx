@@ -10,19 +10,19 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
   title: 'Всички продукти',
-  description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни. Декорации, играчки и аксесоари с високо качество.',
+  description: 'Разгледайте пълната ни колекция от премиум дизайни. Декорации, играчки и аксесоари с високо качество.',
   alternates: {
     canonical: `${BASE_URL}/products`,
   },
   openGraph: {
     title: 'Всички продукти | Bemu',
-    description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни.',
+    description: 'Разгледайте пълната ни колекция от премиум дизайни.',
     url: `${BASE_URL}/products`,
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Всички продукти | Bemu',
-    description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни.',
+    description: 'Разгледайте пълната ни колекция от премиум дизайни.',
   },
 };
 

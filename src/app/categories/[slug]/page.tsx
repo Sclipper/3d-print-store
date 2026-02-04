@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     };
   }
 
-  const description = category.description || `Разгледайте нашата колекция ${category.name}. Премиум 3D принтирани продукти с високо качество.`;
+  const description = category.description || `Разгледайте нашата колекция ${category.name}. Премиум продукти с високо качество.`;
   const categoryUrl = `${BASE_URL}/categories/${category.slug}`;
 
   return {

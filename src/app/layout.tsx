@@ -15,11 +15,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://bemu.bg';
 
 export const metadata: Metadata = {
   title: {
-    default: "Bemu | Премиум 3D принтирани продукти",
+    default: "Bemu | Премиум дизайни за вашия дом",
     template: "%s | Bemu",
   },
-  description: "Премиум дизайни за вашия дом. Открийте уникални 3D принтирани продукти с високо качество.",
-  keywords: ["3D принтиране", "3D printed", "дизайн", "декорация", "България", "Bemu"],
+  description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество.",
+  keywords: ["дизайн", "декорация", "България", "Bemu", "премиум продукти"],
   authors: [{ name: "Bemu" }],
   creator: "Bemu",
   metadataBase: new URL(BASE_URL),
@@ -28,21 +28,21 @@ export const metadata: Metadata = {
     locale: "bg_BG",
     url: BASE_URL,
     siteName: "Bemu",
-    title: "Bemu | Премиум 3D принтирани продукти",
-    description: "Премиум дизайни за вашия дом. Открийте уникални 3D принтирани продукти с високо качество.",
+    title: "Bemu | Премиум дизайни за вашия дом",
+    description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество.",
     images: [
       {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "Bemu - Премиум 3D принтирани продукти",
+        alt: "Bemu - Премиум дизайни за вашия дом",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bemu | Премиум 3D принтирани продукти",
-    description: "Премиум дизайни за вашия дом. Открийте уникални 3D принтирани продукти с високо качество.",
+    title: "Bemu | Премиум дизайни за вашия дом",
+    description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество.",
     images: ["/logo.png"],
   },
   robots: {
