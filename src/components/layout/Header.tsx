@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Category } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
 
@@ -13,7 +13,20 @@ interface HeaderProps {
 export default function Header({ categories = [] }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const { cart, openCart } = useCart();
+  const categoriesRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (categoriesRef.current && !categoriesRef.current.contains(event.target as Node)) {
+        setIsCategoriesOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
@@ -75,15 +88,55 @@ export default function Header({ categories = [] }: HeaderProps) {
             >
               Всички продукти
             </Link>
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/categories/${category.slug}`}
-                className="text-sm text-gray-600 hover:text-black transition-colors"
-              >
-                {category.name}
-              </Link>
-            ))}
+            
+            {/* Categories Dropdown */}
+            {categories.length > 0 && (
+              <div className="relative" ref={categoriesRef}>
+                <button
+                  onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                  onMouseEnter={() => setIsCategoriesOpen(true)}
+                  className="flex items-center gap-1 text-sm text-gray-600 hover:text-black transition-colors"
+                >
+                  Категории
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${isCategoriesOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                <div
+                  onMouseLeave={() => setIsCategoriesOpen(false)}
+                  className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 transition-all duration-200 ${
+                    isCategoriesOpen 
+                      ? 'opacity-100 visible translate-y-0' 
+                      : 'opacity-0 invisible -translate-y-2'
+                  }`}
+                >
+                  <div className="bg-white border border-gray-100 shadow-lg min-w-[220px] py-2">
+                    {categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/categories/${category.slug}`}
+                        className="block px-5 py-2.5 text-sm text-gray-600 hover:text-black hover:bg-gray-50 transition-colors"
+                        onClick={() => setIsCategoriesOpen(false)}
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </nav>
 
           {/* Right side icons */}
@@ -185,16 +238,27 @@ export default function Header({ categories = [] }: HeaderProps) {
             >
               Всички продукти
             </Link>
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/categories/${category.slug}`}
-                className="block text-sm text-gray-600 hover:text-black"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {category.name}
-              </Link>
-            ))}
+            
+            {/* Mobile Categories Section */}
+            {categories.length > 0 && (
+              <div className="pt-2 border-t border-gray-100">
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
+                  Категории
+                </p>
+                <div className="space-y-3">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/categories/${category.slug}`}
+                      className="block text-sm text-gray-600 hover:text-black"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </nav>
         </div>
       )}
