@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
           console.log('Order created successfully:', order.id);
           console.log('Order items created:', orderItems.length);
           orderItems.forEach((item, index) => {
-            console.log(`  Item ${index + 1}: Product ${item.productId}, Qty: ${item.quantity}, Price: $${item.priceEach}`);
+            console.log(`  Item ${index + 1}: Product ${item.productId}, Qty: ${item.quantity}, Price: €${item.priceEach}`);
           });
         }
       } catch (err) {

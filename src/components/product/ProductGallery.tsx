@@ -9,8 +9,49 @@ interface ProductGalleryProps {
   productName: string;
 }
 
+const ImagePlaceholder = ({ size = 'large' }: { size?: 'large' | 'small' }) => (
+  <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
+    <svg
+      className={size === 'large' ? 'w-24 h-24' : 'w-8 h-8'}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1}
+        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
+    </svg>
+  </div>
+);
+
 export default function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [thumbnailErrors, setThumbnailErrors] = useState<Set<number>>(new Set());
+
+  const handleMainLoad = () => {
+    setIsLoading(false);
+  };
+
+  const handleMainError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
+
+  const handleThumbnailError = (index: number) => {
+    setThumbnailErrors((prev) => new Set(prev).add(index));
+  };
+
+  // Reset loading state when changing images
+  const handleImageChange = (index: number) => {
+    setSelectedIndex(index);
+    setIsLoading(true);
+    setHasError(false);
+  };
 
   if (images.length === 0) {
     return (
@@ -38,14 +79,27 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
     <div className="space-y-4">
       {/* Main image */}
       <div className="relative aspect-square bg-gray-50 overflow-hidden">
-        <Image
-          src={selectedImage.url}
-          alt={`${productName} - Image ${selectedIndex + 1}`}
-          fill
-          className="object-contain p-8"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          priority
-        />
+        {/* Loading skeleton */}
+        {isLoading && !hasError && (
+          <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+        )}
+
+        {hasError ? (
+          <ImagePlaceholder size="large" />
+        ) : (
+          <Image
+            src={selectedImage.url}
+            alt={`${productName} - Image ${selectedIndex + 1}`}
+            fill
+            className={`object-contain p-8 transition-opacity duration-300 ${
+              isLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+            onLoad={handleMainLoad}
+            onError={handleMainError}
+          />
+        )}
       </div>
 
       {/* Thumbnail navigation */}
@@ -54,20 +108,25 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
           {images.map((image, index) => (
             <button
               key={image.id}
-              onClick={() => setSelectedIndex(index)}
+              onClick={() => handleImageChange(index)}
               className={`relative w-16 h-16 flex-shrink-0 bg-gray-50 overflow-hidden transition-all ${
                 index === selectedIndex
                   ? 'ring-2 ring-black'
                   : 'ring-1 ring-gray-200 hover:ring-gray-400'
               }`}
             >
-              <Image
-                src={image.thumbnails?.small?.url || image.url}
-                alt={`${productName} thumbnail ${index + 1}`}
-                fill
-                className="object-contain p-1"
-                sizes="64px"
-              />
+              {thumbnailErrors.has(index) ? (
+                <ImagePlaceholder size="small" />
+              ) : (
+                <Image
+                  src={image.thumbnails?.small?.url || image.url}
+                  alt={`${productName} thumbnail ${index + 1}`}
+                  fill
+                  className="object-contain p-1"
+                  sizes="64px"
+                  onError={() => handleThumbnailError(index)}
+                />
+              )}
             </button>
           ))}
         </div>

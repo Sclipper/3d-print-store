@@ -57,10 +57,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         <div className="flex items-center gap-3">
           {product.compareAtPrice && product.compareAtPrice > product.price && (
             <span className="text-lg text-gray-500 line-through">
-              ${product.compareAtPrice.toFixed(2)}
+              €{product.compareAtPrice.toFixed(2)}
             </span>
           )}
-          <span className="text-lg">${product.price.toFixed(2)}</span>
+          <span className="text-lg">€{product.price.toFixed(2)}</span>
         </div>
       </div>
 

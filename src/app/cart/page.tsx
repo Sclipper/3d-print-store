@@ -1,9 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart, getCartItemKey } from '@/lib/cart-context';
+
+function CartItemImage({ src, alt }: { src?: string; alt: string }) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleError = useCallback(() => {
+    setIsLoading(false);
+    setHasError(true);
+  }, []);
+
+  const handleLoad = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  if (!src || hasError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-400">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {isLoading && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        onError={handleError}
+        onLoad={handleLoad}
+      />
+    </>
+  );
+}
 
 export default function CartPage() {
   const { cart, removeItem, updateQuantity } = useCart();
@@ -112,30 +150,7 @@ export default function CartPage() {
                               href={`/products/${item.productSlug}`}
                               className="relative w-24 h-24 bg-gray-100 flex-shrink-0"
                             >
-                              {item.imageUrl ? (
-                                <Image
-                                  src={item.imageUrl}
-                                  alt={item.productName}
-                                  fill
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <svg
-                                    className="w-8 h-8"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={1}
-                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    />
-                                  </svg>
-                                </div>
-                              )}
+                              <CartItemImage src={item.imageUrl} alt={item.productName} />
                             </Link>
                             <div className="flex flex-col justify-center">
                               <Link
@@ -162,7 +177,7 @@ export default function CartPage() {
                           {/* Price */}
                           <div className="sm:col-span-2 flex items-center justify-between sm:justify-center">
                             <span className="sm:hidden text-sm text-gray-500">Цена:</span>
-                            <span>${item.price.toFixed(2)}</span>
+                            <span>€{item.price.toFixed(2)}</span>
                           </div>
 
                           {/* Quantity */}
@@ -217,7 +232,7 @@ export default function CartPage() {
                           <div className="sm:col-span-2 flex items-center justify-between sm:justify-end">
                             <span className="sm:hidden text-sm text-gray-500">Общо:</span>
                             <span className="font-medium">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              €{(item.price * item.quantity).toFixed(2)}
                             </span>
                           </div>
                         </div>
@@ -234,7 +249,7 @@ export default function CartPage() {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Междинна сума</span>
-                      <span>${cart.totalPrice.toFixed(2)}</span>
+                      <span>€{cart.totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Доставка</span>
@@ -244,7 +259,7 @@ export default function CartPage() {
                   <div className="border-t border-gray-200 mt-4 pt-4">
                     <div className="flex justify-between text-base font-medium">
                       <span>Общо</span>
-                      <span>${cart.totalPrice.toFixed(2)}</span>
+                      <span>€{cart.totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
                   <button

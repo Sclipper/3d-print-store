@@ -95,7 +95,7 @@ export default function BuyButton({
         onClick={handleAddToCart}
         className="w-full py-4 bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
       >
-        Добави в количката - ${(product.price * quantity).toFixed(2)}
+        Добави в количката - €{(product.price * quantity).toFixed(2)}
       </button>
       <button
         onClick={handleBuyNow}

@@ -3,6 +3,7 @@ import { getProducts, getCategories } from '@/lib/airtable';
 import ProductGrid from '@/components/product/ProductGrid';
 import Newsletter from '@/components/layout/Newsletter';
 import { Product, Category } from '@/lib/types';
+import CategoryCard from '@/components/product/CategoryCard';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -47,23 +48,7 @@ export default async function HomePage() {
             <h2 className="text-2xl font-light text-center mb-12">Пазарувайте по категория</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/categories/${category.slug}`}
-                  className="group relative aspect-[4/3] bg-gray-100 overflow-hidden"
-                >
-                  {category.image && (
-                    <img
-                      src={category.image.url}
-                      alt={category.name}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <h3 className="text-xl font-medium text-white">{category.name}</h3>
-                  </div>
-                </Link>
+                <CategoryCard key={category.id} category={category} />
               ))}
             </div>
           </div>
