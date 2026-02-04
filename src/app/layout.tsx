@@ -12,13 +12,14 @@ const inter = Inter({
 });
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://bemu.bg';
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
   title: {
     default: "Bemu | Премиум дизайни за вашия дом",
     template: "%s | Bemu",
   },
-  description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество.",
+  description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество. Декорации, играчки и аксесоари, изработени с прецизност и грижа в България. Бърза доставка в цялата страна.",
   keywords: ["дизайн", "декорация", "България", "Bemu", "премиум продукти"],
   authors: [{ name: "Bemu" }],
   creator: "Bemu",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     url: BASE_URL,
     siteName: "Bemu",
     title: "Bemu | Премиум дизайни за вашия дом",
-    description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество.",
+    description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество. Декорации, играчки и аксесоари, изработени с прецизност и грижа в България. Бърза доставка в цялата страна.",
     images: [
       {
         url: "/logo.png",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Bemu | Премиум дизайни за вашия дом",
-    description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество.",
+    description: "Премиум дизайни за вашия дом. Открийте уникални продукти с високо качество. Декорации, играчки и аксесоари, изработени с прецизност и грижа в България.",
     images: ["/logo.png"],
   },
   robots: {
@@ -95,6 +96,26 @@ export default async function RootLayout({
   return (
     <html lang="bg">
       <head>
+        {/* Google Analytics */}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_MEASUREMENT_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
+        {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
