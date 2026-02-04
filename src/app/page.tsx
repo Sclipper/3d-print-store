@@ -1,9 +1,25 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { getProducts, getCategories } from '@/lib/airtable';
 import ProductGrid from '@/components/product/ProductGrid';
 import Newsletter from '@/components/layout/Newsletter';
 import { Product, Category } from '@/lib/types';
 import CategoryCard from '@/components/product/CategoryCard';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://bemu.bg';
+
+export const metadata: Metadata = {
+  title: "Bemu | Премиум 3D принтирани продукти за вашия дом",
+  description: "Открийте уникални 3D принтирани продукти с високо качество. Декорации, играчки и аксесоари, изработени с прецизност в България.",
+  alternates: {
+    canonical: BASE_URL,
+  },
+  openGraph: {
+    title: "Bemu | Премиум 3D принтирани продукти за вашия дом",
+    description: "Открийте уникални 3D принтирани продукти с високо качество. Декорации, играчки и аксесоари, изработени с прецизност в България.",
+    url: BASE_URL,
+  },
+};
 
 export const revalidate = 60; // Revalidate every 60 seconds
 

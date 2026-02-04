@@ -1,13 +1,29 @@
+import { Metadata } from 'next';
 import { getProducts } from '@/lib/airtable';
 import ProductGrid from '@/components/product/ProductGrid';
 import Newsletter from '@/components/layout/Newsletter';
 import { Product } from '@/lib/types';
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://bemu.bg';
+
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export const metadata = {
-  title: 'Всички продукти | Bemu',
-  description: 'Разгледайте пълната ни колекция от премиум дизайни.',
+export const metadata: Metadata = {
+  title: 'Всички продукти',
+  description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни. Декорации, играчки и аксесоари с високо качество.',
+  alternates: {
+    canonical: `${BASE_URL}/products`,
+  },
+  openGraph: {
+    title: 'Всички продукти | Bemu',
+    description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни.',
+    url: `${BASE_URL}/products`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Всички продукти | Bemu',
+    description: 'Разгледайте пълната ни колекция от премиум 3D принтирани дизайни.',
+  },
 };
 
 export default async function ProductsPage() {

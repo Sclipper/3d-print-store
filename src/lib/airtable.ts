@@ -75,6 +75,7 @@ function transformProduct(record: Airtable.Record<Airtable.FieldSet>): Product {
     createdAt: (fields['Created'] as string) || new Date().toISOString(),
     colors: parseVariantOptions(fields['Color']),
     sizes: parseVariantOptions(fields['Size']),
+    seoKeywords: fields['SEO Keywords (AI)'] as string | undefined,
   };
 }
 

@@ -30,6 +30,7 @@ export interface Product {
   createdAt: string;
   colors?: string[];
   sizes?: string[];
+  seoKeywords?: string;
 }
 
 // Category Types

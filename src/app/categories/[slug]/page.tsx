@@ -1,8 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Metadata } from 'next';
 import { getCategoryBySlug, getProducts } from '@/lib/airtable';
 import ProductGrid from '@/components/product/ProductGrid';
 import Newsletter from '@/components/layout/Newsletter';
+import { Category } from '@/lib/types';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://bemu.bg';
 
 export const revalidate = 60;
 
@@ -10,7 +14,7 @@ interface CategoryPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: CategoryPageProps) {
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
 
@@ -20,9 +24,55 @@ export async function generateMetadata({ params }: CategoryPageProps) {
     };
   }
 
+  const description = category.description || `Разгледайте нашата колекция ${category.name}. Премиум 3D принтирани продукти с високо качество.`;
+  const categoryUrl = `${BASE_URL}/categories/${category.slug}`;
+
   return {
-    title: `${category.name} | Bemu`,
-    description: category.description || `Browse our ${category.name} collection.`,
+    title: category.name,
+    description,
+    alternates: {
+      canonical: categoryUrl,
+    },
+    openGraph: {
+      title: `${category.name} | Bemu`,
+      description,
+      url: categoryUrl,
+      type: 'website',
+      images: category.image ? [
+        {
+          url: category.image.url,
+          alt: category.name,
+        },
+      ] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${category.name} | Bemu`,
+      description,
+      images: category.image ? [category.image.url] : [],
+    },
+  };
+}
+
+// Generate Breadcrumb JSON-LD schema
+function generateBreadcrumbJsonLd(category: Category) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Начало',
+        item: BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: category.name,
+        item: `${BASE_URL}/categories/${category.slug}`,
+      },
+    ],
   };
 }
 
@@ -41,8 +91,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     console.error('Failed to fetch products:', error);
   }
 
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd(category);
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* Breadcrumb */}
       <div className="border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
