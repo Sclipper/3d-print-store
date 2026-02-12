@@ -1,5 +1,5 @@
 import Airtable from 'airtable';
-import { Product, Category, Order, OrderItem, ProductImage, ShippingAddress } from './types';
+import { Product, Category, Order, OrderItem, ProductImage, ShippingAddress, OrganiziroProduct } from './types';
 
 // Check if Airtable is configured
 const isAirtableConfigured = !!(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
@@ -16,6 +16,7 @@ const PRODUCTS_TABLE = 'Products';
 const CATEGORIES_TABLE = 'Categories';
 const ORDERS_TABLE = 'Orders';
 const ORDER_ITEMS_TABLE = 'Order Items';
+const ORGANIZIRO_TABLE = 'Organiziro';
 
 // Extended Airtable attachment type with additional properties
 interface ExtendedAttachment extends Airtable.Attachment {
@@ -434,4 +435,69 @@ export async function updateOrderStatus(
   await base(ORDERS_TABLE).update(recordId, {
     'Status': status,
   });
+}
+
+// Helper function to parse grid dimensions from slug (e.g., 'grid-base-organiziro-2x5' -> { width: 2, height: 5 })
+function parseGridDimensions(slug: string): { width?: number; height?: number } {
+  const match = slug.match(/(\d+)x(\d+)/);
+  if (match) {
+    return {
+      width: parseInt(match[1], 10),
+      height: parseInt(match[2], 10),
+    };
+  }
+  return {};
+}
+
+// Helper function to transform Airtable record to OrganiziroProduct
+function transformOrganiziroProduct(record: Airtable.Record<Airtable.FieldSet>): OrganiziroProduct {
+  const fields = record.fields;
+  const images = (fields['Images'] as ExtendedAttachment[] | undefined) || [];
+  const slug = (fields['Slug'] as string) || '';
+  const dimensions = parseGridDimensions(slug);
+  
+  // Determine category from slug
+  const category = slug.includes('grid-base') ? 'grid' : 'box';
+  
+  return {
+    id: record.id,
+    name: (fields['Name'] as string) || '',
+    slug,
+    description: (fields['Description'] as string) || '',
+    price: (fields['Price'] as number) || 0,
+    images: images.map(transformAttachment),
+    inStock: (fields['In Stock'] as boolean) ?? true,
+    stockQuantity: (fields['Stock Quantity'] as number) || 0,
+    specifications: fields['Specifications'] as string | undefined,
+    category,
+    gridWidth: dimensions.width,
+    gridHeight: dimensions.height,
+  };
+}
+
+// Get all Organiziro products
+export async function getOrganiziroProducts(): Promise<OrganiziroProduct[]> {
+  if (!isAirtableConfigured || !base) {
+    throw new Error('Airtable is not configured. Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID environment variables.');
+  }
+
+  const records = await base(ORGANIZIRO_TABLE)
+    .select({
+      maxRecords: 100,
+    })
+    .all();
+
+  return records.map(transformOrganiziroProduct);
+}
+
+// Get only grid base products from Organiziro table
+export async function getOrganiziroGridBases(): Promise<OrganiziroProduct[]> {
+  const products = await getOrganiziroProducts();
+  return products.filter(p => p.category === 'grid' && p.gridWidth && p.gridHeight);
+}
+
+// Get only box products from Organiziro table
+export async function getOrganiziroBoxes(): Promise<OrganiziroProduct[]> {
+  const products = await getOrganiziroProducts();
+  return products.filter(p => p.category === 'box');
 }

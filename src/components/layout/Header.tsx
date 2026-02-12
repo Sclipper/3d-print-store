@@ -83,6 +83,12 @@ export default function Header({ categories = [] }: HeaderProps) {
               Начало
             </Link>
             <Link
+              href="/organiziro"
+              className="text-sm text-gray-600 hover:text-black transition-colors"
+            >
+              Система Организиро
+            </Link>
+            <Link
               href="/products"
               className="text-sm text-gray-600 hover:text-black transition-colors"
             >
@@ -230,6 +236,13 @@ export default function Header({ categories = [] }: HeaderProps) {
               onClick={() => setIsMenuOpen(false)}
             >
               Начало
+            </Link>
+            <Link
+              href="/organiziro"
+              className="block text-sm text-gray-600 hover:text-black"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Система Организиро
             </Link>
             <Link
               href="/products"

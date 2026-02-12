@@ -108,6 +108,23 @@ export interface Cart {
   totalPrice: number;
 }
 
+// Organiziro Types
+export interface OrganiziroProduct {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  images: ProductImage[];
+  inStock: boolean;
+  stockQuantity: number;
+  specifications?: string;
+  category?: string; // 'grid' or 'box'
+  // Grid dimensions parsed from slug (e.g., 'grid-base-organiziro-2x5' -> width: 2, height: 5)
+  gridWidth?: number;
+  gridHeight?: number;
+}
+
 // Checkout Types
 export interface CheckoutRequest {
   items: {
